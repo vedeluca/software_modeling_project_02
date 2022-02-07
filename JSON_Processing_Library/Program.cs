@@ -18,7 +18,7 @@ string JsonString =
 "                    \"para\": \"A meta-markup language, used to create markup languages such as DocBook.\",\n" +
 "						\"GlossSeeAlso\": [\"GML\", \"XML\"]\n" +
 "                    },\n" +
-"					\"GlossSee\": \"markup\"\n" +
+"					\"GlossSee\": null\n" +
 "                }\n" +
 "        }\n" +
 "    }\n" +
@@ -26,6 +26,5 @@ string JsonString =
 "}";
 JsonParser parser = new JsonParser();
 JsonNode test = parser.StringToJsonNode(JsonString);
-object query = test.Query("GlossDiv");
-JsonNode node = (JsonNode) query;
-Console.WriteLine(node.ToString());
+string query = test.QueryToString("GlossSeeAlso");
+Console.WriteLine(query);

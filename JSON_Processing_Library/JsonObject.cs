@@ -22,7 +22,19 @@ namespace JsonProcessing
                 Root = parent;
         }
 
-        //TODO: bring back and finish the ToString()
+        public string QueryToString(string search)
+        {
+            object? query = Query(search);
+            if (query == null)
+                return "null";
+            else
+                return query.ToString();
+        }
+
+        new public string ToString()
+        {
+            return "";
+        }
 
         public object? Query(string search)
         {
@@ -43,7 +55,7 @@ namespace JsonProcessing
         {
             if (value is string ||
                 value is int ||
-                value is float ||
+                value is double ||
                 value is bool ||
                 value is JsonNode ||
                 value is null)

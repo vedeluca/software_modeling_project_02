@@ -13,6 +13,8 @@ namespace JsonProcessing
 
         string ToString();
 
+        string QueryToString(string search);
+
         object Query(string search);
     }
 }

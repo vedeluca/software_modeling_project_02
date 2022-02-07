@@ -22,6 +22,20 @@ namespace JsonProcessing
                 Root = parent;
         }
 
+        public string ToString()
+        {
+            return "";
+        }
+
+        public string QueryToString(string search)
+        {
+            object? query = Query(search);
+            if (query == null)
+                return "null";
+            else
+                return query.ToString();
+        }
+
         public object Query(string search)
         {
             Type genericType = typeof(T);
