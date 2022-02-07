@@ -26,5 +26,5 @@ string JsonString =
 "}";
 JsonParser parser = new JsonParser();
 JsonNode test = parser.StringToJsonNode(JsonString);
-string query = test.QueryToString("GlossSeeAlso");
-Console.WriteLine(query);
+//string query = test.QueryToString("GlossSeeAlso");
+Console.WriteLine(test.ToString());

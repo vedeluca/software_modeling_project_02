@@ -13,6 +13,8 @@ namespace JsonProcessing
 
         string ToString();
 
+        string ToString(string tabs);
+
         string QueryToString(string search);
 
         object Query(string search);
