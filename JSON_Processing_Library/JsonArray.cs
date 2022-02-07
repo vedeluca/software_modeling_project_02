@@ -22,6 +22,61 @@ namespace JsonProcessing
                 Root = parent;
         }
 
+        new public string ToString()
+        {
+            return this.ToString("");
+        }
+
+        public string ToString(string tabs)
+        {
+            StringBuilder sb = new();
+            sb.Append("[\n");
+            for (int i = 0; i < this.Count; i++)
+            {
+                sb.Append(tabs);
+                sb.Append('\t');
+                T item = this[i];
+                if (item == null)
+                {
+                    sb.Append("null");
+                }
+                else if (item is string) {
+                    sb.Append('"');
+                    sb.Append(item);
+                    sb.Append('"');
+                }
+                else if (item is JsonNode)
+                {
+                    StringBuilder tabsBuilder = new();
+                    tabsBuilder.Append(tabs);
+                    tabsBuilder.Append('\t');
+                    JsonNode node = (JsonNode)item;
+                    sb.Append(node.ToString(tabsBuilder.ToString()));
+                }
+                else
+                {
+                    sb.Append(item.ToString());
+                }
+                if (i < this.Count - 1)
+                    sb.Append(',');
+                sb.Append('\n');
+            }
+            sb.Append(tabs);
+            sb.Append(']');
+            return sb.ToString();
+        }
+
+        public string QueryToString(string search)
+        {
+            object? query = Query(search);
+            if (query == null)
+                return "null";
+            else if (query is JsonNode)
+                return ((JsonNode)query).ToString();
+            else
+                return query.ToString();
+        }
+
         public object Query(string search)
         {
             Type genericType = typeof(T);

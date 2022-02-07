@@ -181,7 +181,7 @@ namespace JsonProcessing
                         throw new JsonParserException(LineCounter);
                     checkEnd = true;
                 }
-                else if (float.TryParse(target, out _))
+                else if (double.TryParse(target, out _))
                 {
                     if (checkEnd)
                         throw new JsonParserException(LineCounter);

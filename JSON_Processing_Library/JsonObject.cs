@@ -22,7 +22,63 @@ namespace JsonProcessing
                 Root = parent;
         }
 
-        //TODO: bring back and finish the ToString()
+        public string QueryToString(string search)
+        {
+            object? query = Query(search);
+            if (query == null)
+                return "null";
+            else if (query is JsonNode)
+                return ((JsonNode)query).ToString();
+            else
+                return query.ToString();
+        }
+
+        new public string ToString()
+        {
+            return this.ToString("");
+        }
+
+        public string ToString(string tabs)
+        {
+            StringBuilder sb = new();
+            sb.Append("{\n");
+            for (int i = 0; i < this.Count; i++)
+            {
+                KeyValuePair<string, object?> item = this.ElementAt(i);
+                sb.Append(tabs);
+                sb.Append("\t\"");
+                sb.Append(item.Key);
+                sb.Append("\": ");
+                if (item.Value == null)
+                {
+                    sb.Append("null");
+                }
+                else if (item.Value is string)
+                {
+                    sb.Append('"');
+                    sb.Append(item.Value);
+                    sb.Append('"');
+                }
+                else if (item.Value is JsonNode)
+                {
+                    StringBuilder tabsBuilder = new();
+                    tabsBuilder.Append(tabs);
+                    tabsBuilder.Append('\t');
+                    JsonNode node = (JsonNode)item.Value;
+                    sb.Append(node.ToString(tabsBuilder.ToString()));
+                }
+                else
+                {
+                    sb.Append(item.Value.ToString());
+                }
+                if (i < this.Count - 1)
+                    sb.Append(',');
+                sb.Append('\n');
+            }
+            sb.Append(tabs);
+            sb.Append('}');
+            return sb.ToString();
+        }
 
         public object? Query(string search)
         {
@@ -43,7 +99,7 @@ namespace JsonProcessing
         {
             if (value is string ||
                 value is int ||
-                value is float ||
+                value is double ||
                 value is bool ||
                 value is JsonNode ||
                 value is null)
