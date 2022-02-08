@@ -11,12 +11,12 @@ namespace JsonProcessing
         /// <summary>
         /// The direct parent of the current node
         /// </summary>
-        IJsonNode Parent { get; set; }
+        IJsonNode? Parent { get; set; }
 
         /// <summary>
         /// The root of the entire JSON tree
         /// </summary>
-        IJsonNode Root { get; set; }
+        IJsonNode? Root { get; set; }
 
         /// <summary>
         /// Replaces the ToString method
