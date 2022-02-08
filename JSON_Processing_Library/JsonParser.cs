@@ -7,244 +7,192 @@ using System.Text.RegularExpressions;
 
 namespace JsonProcessing
 {
-    internal class JsonParser
+    internal static class JsonParser
     {
-        private string[] JsonList { get; set; }
-        private int LineCounter { get; set; }
-        private int ListCounter { get; set; }
-
-        public JsonParser()
+        public static JsonNode? StringToJsonNode(string jsonString)
         {
-
-        }
-
-        public JsonNode? StringToJsonNode(string jsonString)
-        {
-            JsonList = Regex.Split(jsonString, @"({|}|\[|\]|,|:|""|\\|\n|null|true|false)");
-            if (JsonList == null)
+            string[] jsonList = Regex.Split(jsonString, @"({|}|\[|\]|,|:|""|\\|\n|null|true|false)");
+            if (jsonList == null)
                 throw new NullReferenceException();
-            LineCounter = 1;
-            ListCounter = 0;
-            while (ListCounter < JsonList.Length)
+            int lineCounter = 1;
+            int listCounter = 0;
+            while (listCounter < jsonList.Length)
             {
-                string target = JsonList[ListCounter];
+                string target = jsonList[listCounter];
                 if (target == "\n")
-                {
-                    LineCounter++;
-                }
+                    lineCounter++;
                 else if (target == "{")
-                {
-                    ListCounter++;
-                    return ParseJsonObject(new JsonObject<string, object?>());
-                }
+                    return new JsonObject<string, object?>().ParseJsonObject(ref jsonList, ref lineCounter, ref listCounter);
                 else if (target == "[")
-                {
-                    ListCounter++;
-                    return ParseJsonArray(new JsonArray<object?>());
-                }
+                    return new JsonArray<object?>().ParseJsonArray(ref jsonList, ref lineCounter, ref listCounter);
                 else if (!String.IsNullOrWhiteSpace(target))
-                {
-                    throw new JsonParserException(LineCounter);
-                }
-                ListCounter++;
+                    throw new JsonParserException(lineCounter);
+                listCounter++;
             }
-            return null;
+            throw new JsonParserException(lineCounter);
         }
 
-        private JsonObject<string, object?> ParseJsonObject(JsonObject<string, object?> jsonObject)
+        private static JsonObject<string, object?> ParseJsonObject(this JsonObject<string, object?> jsonObject, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
-            while (ListCounter < JsonList.Length)
+            listCounter++;
+            while (listCounter < jsonList.Length)
             {
-                string target = JsonList[ListCounter];
+                string target = jsonList[listCounter];
                 if (target == "\n")
                 {
-                    LineCounter++;
+                    lineCounter++;
                 }
                 else if (target == "\"")
                 {
-                    ListCounter++;
-                    string? key = ParseString();
-                    if (key == null)
-                        throw new JsonParserException(LineCounter);
-                    ListCounter++;
-                    object? value = null;
-                    bool loop = true;
-                    while (ListCounter < JsonList.Length && loop)
-                    {
-                        string subtarget = JsonList[ListCounter];
-                        if (subtarget == "\n")
-                        {
-                            LineCounter++;
-                        }
-                        else if (subtarget == ":")
-                        {
-                            ListCounter++;
-                            value = ParseValue(jsonObject, "}");
-                            loop = false;
-                        }
-                        else if (!String.IsNullOrWhiteSpace(subtarget))
-                        {
-                            throw new JsonParserException(LineCounter);
-                        }
-                        ListCounter++;
-                    }
-                    if (loop)
-                        throw new JsonParserException(LineCounter);
+                    string key = ParseString(ref jsonList, ref lineCounter, ref listCounter);
+                    object? value = ParseObjVal(jsonObject, ref jsonList, ref lineCounter, ref listCounter);
+                    listCounter++;
                     jsonObject.Add(key, value);
-                    if (JsonList[ListCounter - 1] == "}")
+                    if (jsonList[listCounter - 1] == "}")
                     {
                         return jsonObject;
                     }
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
                 {
-                    throw new JsonParserException(LineCounter);
+                    throw new JsonParserException(lineCounter);
                 }
-                ListCounter++;
-
+                listCounter++;
             }
-            throw new JsonParserException(LineCounter);
+            throw new JsonParserException(lineCounter);
         }
 
-        private JsonNode ParseJsonArray(JsonArray<object?> jsonArray)
+        private static JsonArray<object?> ParseJsonArray(this JsonArray<object?> jsonArray, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             Type type = null;
-            while (ListCounter < JsonList.Length)
+            listCounter++;
+            while (listCounter < jsonList.Length)
             {
-                string target = JsonList[ListCounter];
+                string target = jsonList[listCounter];
                 if (target == "\n")
                 {
-                    LineCounter++;
+                    lineCounter++;
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
                 {
-                    object? value = ParseValue(jsonArray, "]");
+                    object? value = ParseValueAndEnd(jsonArray, "]", ref jsonList, ref lineCounter, ref listCounter);
                     if (value == null && type != null)
-                        throw new JsonParserException(LineCounter);
+                        throw new JsonParserException(lineCounter);
                     else if (value != null)
                     {
                         if (type == null)
                             type = value.GetType();
                         else if (!type.Equals(value.GetType()))
-                            throw new JsonParserException(LineCounter);
+                            throw new JsonParserException(lineCounter);
                     }
                     jsonArray.Add(value);
-                    if (JsonList[ListCounter] == "]")
+                    if (jsonList[listCounter] == "]")
                     {
+                        listCounter++;
                         return jsonArray;
                     }
                 }
-                ListCounter++;
+                listCounter++;
 
             }
-            throw new JsonParserException(LineCounter);
+            throw new JsonParserException(lineCounter);
         }
 
-        private object? ParseValue(JsonNode parent, string end)
+        private static object? ParseObjVal(JsonObject<string, object?> jsonObject, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
-            object? value = null;
-            bool checkEnd = false;
-            while (ListCounter < JsonList.Length)
+            listCounter++;
+            while (listCounter < jsonList.Length)
             {
-                string target = JsonList[ListCounter];
+                string subtarget = jsonList[listCounter];
+                if (subtarget == "\n")
+                {
+                    lineCounter++;
+                }
+                else if (subtarget == ":")
+                {
+                    listCounter++;
+                    return ParseValueAndEnd(jsonObject, "}", ref jsonList, ref lineCounter, ref listCounter);
+                }
+                else if (!String.IsNullOrWhiteSpace(subtarget))
+                {
+                    throw new JsonParserException(lineCounter);
+                }
+                listCounter++;
+            }
+            throw new JsonParserException(lineCounter);
+        }
+
+        private static object? ParseValueAndEnd(JsonNode parent, string end, ref string[] jsonList, ref int lineCounter, ref int listCounter)
+        {
+            object? value = ParseValue(parent, ref jsonList, ref lineCounter, ref listCounter);
+            while (listCounter < jsonList.Length)
+            {
+                listCounter++;
+                string target = jsonList[listCounter];
                 if (target == "\n")
                 {
-                    LineCounter++;
-                }
-                else if (target == "{")
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    ListCounter++;
-                    value = ParseJsonObject(new JsonObject<string, object?>(parent));
-                    if (value == null)
-                        throw new JsonParserException(LineCounter);
-                    checkEnd = true;
-                }
-                else if (target == "[")
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    ListCounter++;
-                    value = ParseJsonArray(new JsonArray<object?>(parent));
-                    if (value == null)
-                        throw new JsonParserException(LineCounter);
-                    checkEnd = true;
-                }
-                else if (target == "\"")
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    ListCounter++;
-                    value = ParseString();
-                    if (value == null)
-                        throw new JsonParserException(LineCounter);
-                    checkEnd = true;
-                }
-                else if (double.TryParse(target, out _))
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    value = Convert.ToDouble(target);
-                    checkEnd = true;
-                }
-                else if (int.TryParse(target, out _))
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    value = Convert.ToInt32(target);
-                    checkEnd = true;
-                }
-                else if (target == "true")
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    value = true;
-                    checkEnd = true;
-                }
-                else if (target == "false")
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    value = false;
-                    checkEnd = true;
-                }
-                else if (target == "null")
-                {
-                    if (checkEnd)
-                        throw new JsonParserException(LineCounter);
-                    value = null;
-                    checkEnd = true;
+                    lineCounter++;
                 }
                 else if (target == "," || target == end)
                 {
-                    if (!checkEnd)
-                        throw new JsonParserException(LineCounter);
                     return value;
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
                 {
-                    throw new JsonParserException(LineCounter);
+                    throw new JsonParserException(lineCounter);
                 }
-                ListCounter++;
             }
-            return null;
+            throw new JsonParserException(lineCounter);
         }
 
-        private string? ParseString()
+        private static object? ParseValue(JsonNode parent, ref string[] jsonList, ref int lineCounter, ref int listCounter)
+        {
+            while (listCounter < jsonList.Length)
+            {
+                string target = jsonList[listCounter];
+                if (target == "\n")
+                    lineCounter++;
+                else if (target == "{")
+                    return new JsonObject<string, object?>(parent).ParseJsonObject(ref jsonList, ref lineCounter, ref listCounter);
+                else if (target == "[")
+                    return new JsonArray<object?>(parent).ParseJsonArray(ref jsonList, ref lineCounter, ref listCounter);
+                else if (target == "\"")
+                    return ParseString(ref jsonList, ref lineCounter, ref listCounter);
+                else if (int.TryParse(target, out _))
+                    return Convert.ToInt32(target);
+                else if (double.TryParse(target, out _))
+                    return Convert.ToDouble(target);
+                else if (target == "true")
+                    return true;
+                else if (target == "false")
+                    return false;
+                else if (target == "null")
+                    return null;
+                else if (!String.IsNullOrWhiteSpace(target))
+                    throw new JsonParserException(lineCounter);
+                listCounter++;
+            }
+            throw new JsonParserException(lineCounter);
+        }
+
+        private static string ParseString(ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             StringBuilder sb = new StringBuilder();
-            while (ListCounter < JsonList.Length)
+            listCounter++;
+            while (listCounter < jsonList.Length)
             {
-                string target = JsonList[ListCounter];
-                if (target == "\"" && JsonList[ListCounter - 1] != "\\")
+                string target = jsonList[listCounter];
+                if (target == "\"" && jsonList[listCounter - 1] != "\\")
+                {
+                    listCounter++;
                     return sb.ToString();
+                }
                 if (target == "\n")
-                    LineCounter++;
+                    lineCounter++;
                 sb.Append(target);
-                ListCounter++;
+                listCounter++;
             }
-            return null;
+            throw new JsonParserException(lineCounter);
         }
     }
 }

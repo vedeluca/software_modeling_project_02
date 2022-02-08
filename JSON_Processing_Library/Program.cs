@@ -2,29 +2,35 @@
 using JsonProcessing;
 
 string JsonString =
-"{\n" +
-"    \"glossary\": {\n" +
-"    \"title\": \"example glossary\",\n" +
-"		\"GlossDiv\": {\n" +
-"        \"title\": \"S\",\n" +
-"			\"GlossList\": {\n" +
-"            \"GlossEntry\": {\n" +
-"                \"ID\": \"SGML\",\n" +
-"					\"SortAs\": \"SGML\",\n" +
-"					\"GlossTerm\": \"Standard Generalized Markup Language\",\n" +
-"					\"Acronym\": \"SGML\",\n" +
-"					\"Abbrev\": \"ISO 8879:1986\",\n" +
-"					\"GlossDef \": {\n" +
-"                    \"para\": \"A meta-markup language, used to create markup languages such as DocBook.\",\n" +
-"						\"GlossSeeAlso\": [\"GML\", \"XML\"]\n" +
-"                    },\n" +
-"					\"GlossSee\": null\n" +
-"                }\n" +
-"        }\n" +
-"    }\n" +
-"}\n" +
-"}";
-JsonParser parser = new JsonParser();
-JsonNode test = parser.StringToJsonNode(JsonString);
-//string query = test.QueryToString("GlossSeeAlso");
-Console.WriteLine(test.ToString());
+"{\n" +//1
+"    \"glossary\": {\n" +//2
+"    \"title\": \"example glossary\",\n" +//3
+"		\"GlossDiv\": {\n" +//4
+"        \"title\": \"S\",\n" +//5
+"			\"GlossList\": {\n" +//6
+"            \"GlossEntry\": {\n" +//7
+"                \"ID\": \"SGML\",\n" +//8
+"					\"SortAs\": \"SGML\",\n" +//9
+"					\"GlossTerm\": \"Standard Generalized Markup Language\",\n" +//10
+"					\"Acronym\": \"SGML\",\n" +//11
+"					\"Abbrev\": \"ISO 8879:1986\",\n" +//12
+"					\"GlossDef\": {\n" +//13
+"                    \"para\": \"A meta-markup language, used to create markup languages such as DocBook.\",\n" +//14
+"						\"GlossSeeAlso\": [\"GML\", \"XML\"]\n" +//15
+"                    },\n" +//16
+"					\"GlossSee\": null\n" +//17
+"                }\n" +//18
+"            }\n" +//19
+"        }\n" +//20
+"    }\n" +//21
+"}";//22
+JsonNode root = JsonParser.StringToJsonNode(JsonString);
+object obj = root.Query("GlossDef");
+if (obj is JsonObject<string, object?>)
+{
+    JsonObject<string, object?> node = (JsonObject<string, object?>)obj;
+    node.Add("Boolean Test", false);
+    node.Add("Number Test", -123.45);
+    node.Add("String Test", "test \\\"test\\\"");
+}
+Console.WriteLine(root.ToString());

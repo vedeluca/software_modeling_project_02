@@ -50,27 +50,15 @@ namespace JsonProcessing
                 sb.Append(item.Key);
                 sb.Append("\": ");
                 if (item.Value == null)
-                {
                     sb.Append("null");
-                }
                 else if (item.Value is string)
-                {
-                    sb.Append('"');
-                    sb.Append(item.Value);
-                    sb.Append('"');
-                }
+                    sb.Append(StringToString(item.Value.ToString()));
+                else if (item.Value is bool)
+                    sb.Append(item.Value.ToString().ToLower());
                 else if (item.Value is JsonNode)
-                {
-                    StringBuilder tabsBuilder = new();
-                    tabsBuilder.Append(tabs);
-                    tabsBuilder.Append('\t');
-                    JsonNode node = (JsonNode)item.Value;
-                    sb.Append(node.ToString(tabsBuilder.ToString()));
-                }
+                    sb.Append(NodeToString((JsonNode)item.Value, tabs));
                 else
-                {
                     sb.Append(item.Value.ToString());
-                }
                 if (i < this.Count - 1)
                     sb.Append(',');
                 sb.Append('\n');
@@ -78,6 +66,23 @@ namespace JsonProcessing
             sb.Append(tabs);
             sb.Append('}');
             return sb.ToString();
+        }
+
+        private string StringToString(string value)
+        {
+            StringBuilder sb = new();
+            sb.Append('"');
+            sb.Append(value);
+            sb.Append('"');
+            return sb.ToString();
+        }
+
+        private string NodeToString(JsonNode node, string tabs)
+        {
+            StringBuilder sb = new();
+            sb.Append(tabs);
+            sb.Append('\t');
+            return node.ToString(sb.ToString());
         }
 
         public object? Query(string search)
@@ -97,6 +102,7 @@ namespace JsonProcessing
         }
         new public void Add(string key, object? value)
         {
+            //TODO: string handler with exception? Don't do if not enough time (talking about the escaped characters)
             if (value is string ||
                 value is int ||
                 value is double ||
