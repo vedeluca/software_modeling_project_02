@@ -9,7 +9,14 @@ namespace JsonProcessing
 {
     internal static class JsonParser
     {
-        public static JsonNode? StringToJsonNode(string jsonString)
+        /// <summary>
+        /// Converts a JSON string to a JsonNode.
+        /// </summary>
+        /// <param name="jsonString"></param>
+        /// <returns cref="IJsonNode">This JsonNode is the root of the JSON string</returns>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <exception cref="JsonParserException"></exception>
+        public static IJsonNode? StringToJsonNode(string jsonString)
         {
             string[] jsonList = Regex.Split(jsonString, @"({|}|\[|\]|,|:|""|\\|\n|null|true|false)");
             if (jsonList == null)
@@ -32,6 +39,15 @@ namespace JsonProcessing
             throw new JsonParserException(lineCounter);
         }
 
+        /// <summary>
+        /// Looks through the JSON list at the current position to add keys and values to the JsonObject
+        /// </summary>
+        /// <param name="jsonObject" cref="JsonObject{TKey, TValue}"></param>
+        /// <param name="jsonList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns cref="JsonObject{TKey, TValue}">Returns the jsonObject this method extends</returns>
+        /// <exception cref="JsonParserException"></exception>
         private static JsonObject<string, object?> ParseJsonObject(this JsonObject<string, object?> jsonObject, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             listCounter++;
@@ -62,6 +78,15 @@ namespace JsonProcessing
             throw new JsonParserException(lineCounter);
         }
 
+        /// <summary>
+        /// Looks through the JSON list at the current position to add values to the JsonArray
+        /// </summary>
+        /// <param name="jsonArray" cref="JsonArray{T}"></param>
+        /// <param name="jsonList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns cref="JsonArray{T}">Returns the JsonArray this method extends</returns>
+        /// <exception cref="JsonParserException"></exception>
         private static JsonArray<object?> ParseJsonArray(this JsonArray<object?> jsonArray, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             Type type = null;
@@ -98,6 +123,16 @@ namespace JsonProcessing
             throw new JsonParserException(lineCounter);
         }
 
+        /// <summary>
+        /// Looks througn the JSON list at the current position to read the value of the current key
+        /// </summary>
+        /// <param name="jsonObject" cref="JsonObject{TKey, TValue}"></param>
+        /// <param name="jsonList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>After finding the colon, returns the value from ParseValueAndEnd</returns>
+        /// <see cref="ParseValueAndEnd(IJsonNode, string, ref string[], ref int, ref int)"/>
+        /// <exception cref="JsonParserException"></exception>
         private static object? ParseObjVal(JsonObject<string, object?> jsonObject, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             listCounter++;
@@ -122,7 +157,18 @@ namespace JsonProcessing
             throw new JsonParserException(lineCounter);
         }
 
-        private static object? ParseValueAndEnd(JsonNode parent, string end, ref string[] jsonList, ref int lineCounter, ref int listCounter)
+        /// <summary>
+        /// Looks througn the JSON list at the current position to read the current value and check if the entry ends correctly
+        /// </summary>
+        /// <param name="parent" cref="IJsonNode"></param>
+        /// <param name="end"></param>
+        /// <param name="jsonList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>When this method finds a comma or the character from the "end" parameter, it returns the value from ParseValue</returns>
+        /// <see cref="ParseValue(IJsonNode, ref string[], ref int, ref int)"/>
+        /// <exception cref="JsonParserException"></exception>
+        private static object? ParseValueAndEnd(IJsonNode parent, string end, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             object? value = ParseValue(parent, ref jsonList, ref lineCounter, ref listCounter);
             while (listCounter < jsonList.Length)
@@ -145,7 +191,16 @@ namespace JsonProcessing
             throw new JsonParserException(lineCounter);
         }
 
-        private static object? ParseValue(JsonNode parent, ref string[] jsonList, ref int lineCounter, ref int listCounter)
+        /// <summary>
+        /// Looks througn the JSON list at the current position to read the current value
+        /// </summary>
+        /// <param name="parent" cref="IJsonNode"></param>
+        /// <param name="jsonList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>Returns a JsonObject, JsonArray, string, int, double, bool, or null</returns>
+        /// <exception cref="JsonParserException"></exception>
+        private static object? ParseValue(IJsonNode parent, ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             while (listCounter < jsonList.Length)
             {
@@ -175,6 +230,14 @@ namespace JsonProcessing
             throw new JsonParserException(lineCounter);
         }
 
+        /// <summary>
+        /// If a string is detected in the JSON list, this method looks for the end
+        /// </summary>
+        /// <param name="jsonList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>Returns the whole string without the quotation marks at the ends</returns>
+        /// <exception cref="JsonParserException"></exception>
         private static string ParseString(ref string[] jsonList, ref int lineCounter, ref int listCounter)
         {
             StringBuilder sb = new StringBuilder();

@@ -24,15 +24,22 @@ string JsonString =
 "        }\n" +//20
 "    }\n" +//21
 "}";//22
-JsonNode root = JsonParser.StringToJsonNode(JsonString);
-object obj = root.Query("GlossDef");
-Console.WriteLine(root.QueryToString("GlossDef"));
-if (obj is JsonObject<string, object?>)
+try
 {
-    JsonObject<string, object?> node = (JsonObject<string, object?>)obj;
-    node.Add("Boolean Test", false);
-    node.Add("Number Test", -123.45);
-    node.Add("String Test", "test \\\"test\\\"");
-}
+    IJsonNode root = JsonParser.StringToJsonNode(JsonString);
+    object obj = root.Query("GlossDef");
+    Console.WriteLine(root.QueryToString("GlossDef"));
+    if (obj is JsonObject<string, object?>)
+    {
+        JsonObject<string, object?> node = (JsonObject<string, object?>)obj;
+        node.Add("Boolean Test", false);
+        node.Add("Number Test", -123.45);
+        node.Add("String Test", "test \\\"test\\\"");
+    }
 
-Console.WriteLine(root.ToString());
+    Console.WriteLine(root.ToString());
+}
+catch (Exception e) when (e is JsonParserException || e is NotImplementedException || e is NullReferenceException)
+{
+    Console.WriteLine(e);
+}
