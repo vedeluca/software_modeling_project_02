@@ -16,21 +16,7 @@ namespace JsonProcessing
         public JsonObject(JsonNode parent)
         {
             Parent = parent;
-            if (parent.Root != null)
-                Root = parent.Root;
-            else
-                Root = parent;
-        }
-
-        public string QueryToString(string search)
-        {
-            object? query = Query(search);
-            if (query == null)
-                return "null";
-            else if (query is JsonNode)
-                return ((JsonNode)query).ToString();
-            else
-                return query.ToString();
+            Root = (parent.Root != null) ? parent.Root : parent;
         }
 
         new public string ToString()
@@ -52,11 +38,11 @@ namespace JsonProcessing
                 if (item.Value == null)
                     sb.Append("null");
                 else if (item.Value is string)
-                    sb.Append(StringToString(item.Value.ToString()));
+                    sb.Append(JsonUtility.StringToString(item.Value.ToString()));
                 else if (item.Value is bool)
                     sb.Append(item.Value.ToString().ToLower());
                 else if (item.Value is JsonNode)
-                    sb.Append(NodeToString((JsonNode)item.Value, tabs));
+                    sb.Append(JsonUtility.NodeToString((JsonNode)item.Value, tabs));
                 else
                     sb.Append(item.Value.ToString());
                 if (i < this.Count - 1)
@@ -66,23 +52,6 @@ namespace JsonProcessing
             sb.Append(tabs);
             sb.Append('}');
             return sb.ToString();
-        }
-
-        private string StringToString(string value)
-        {
-            StringBuilder sb = new();
-            sb.Append('"');
-            sb.Append(value);
-            sb.Append('"');
-            return sb.ToString();
-        }
-
-        private string NodeToString(JsonNode node, string tabs)
-        {
-            StringBuilder sb = new();
-            sb.Append(tabs);
-            sb.Append('\t');
-            return node.ToString(sb.ToString());
         }
 
         public object? Query(string search)

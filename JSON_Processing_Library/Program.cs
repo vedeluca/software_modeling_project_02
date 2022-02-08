@@ -26,6 +26,7 @@ string JsonString =
 "}";//22
 JsonNode root = JsonParser.StringToJsonNode(JsonString);
 object obj = root.Query("GlossDef");
+Console.WriteLine(root.QueryToString("GlossDef"));
 if (obj is JsonObject<string, object?>)
 {
     JsonObject<string, object?> node = (JsonObject<string, object?>)obj;
@@ -33,4 +34,5 @@ if (obj is JsonObject<string, object?>)
     node.Add("Number Test", -123.45);
     node.Add("String Test", "test \\\"test\\\"");
 }
+
 Console.WriteLine(root.ToString());
