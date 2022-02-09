@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing
 {
-    internal class JsonArray<T> : List<T>, IJsonNode
+    public class JsonArray<T> : List<T>, IJsonNode
     {
         /// <summary>
         /// The direct parent of the current node

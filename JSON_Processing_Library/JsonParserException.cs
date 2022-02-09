@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing
 {
-    internal class JsonParserException : Exception
+    public class JsonParserException : Exception
     {
         public JsonParserException() { }
 

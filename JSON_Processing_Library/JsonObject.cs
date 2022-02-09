@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing
 {
-    internal class JsonObject<TKey, TValue> : Dictionary<string, object?>, IJsonNode
+    public class JsonObject<TKey, TValue> : Dictionary<string, object?>, IJsonNode
     {
         /// <summary>
         /// The direct parent of the current node

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing
 {
-    internal interface IJsonNode
+    public interface IJsonNode
     {
         /// <summary>
         /// The direct parent of the current node

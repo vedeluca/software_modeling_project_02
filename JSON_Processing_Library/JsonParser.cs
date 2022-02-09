@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace JsonProcessing
 {
-    internal static class JsonParser
+    public static class JsonParser
     {
         /// <summary>
         /// Converts a JSON string to a JsonNode.
