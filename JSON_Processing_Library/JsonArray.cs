@@ -6,27 +6,44 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing
 {
-    internal class JsonArray<T> : List<T>, JsonNode
+    public class JsonArray<T> : List<T>, IJsonNode
     {
-        public JsonNode? Parent { get; set; }
-        public JsonNode? Root { get; set; }
+        /// <summary>
+        /// The direct parent of the current node
+        /// </summary>
+        public IJsonNode? Parent { get; set; }
+
+        /// <summary>
+        /// The root of the entire JSON tree
+        /// </summary>
+        public IJsonNode? Root { get; set; }
 
         public JsonArray() { }
 
-        public JsonArray(JsonNode parent)
+        /// <summary>
+        /// If this JSON array's parent has no root, then the parent is the root
+        /// </summary>
+        /// <param name="parent"></param>
+        public JsonArray(IJsonNode parent)
         {
             Parent = parent;
-            if (parent.Root != null)
-                Root = parent.Root;
-            else
-                Root = parent;
+            Root = (parent.Root != null) ? parent.Root : parent;
         }
 
+        /// <summary>
+        /// Replaces the ToString method
+        /// </summary>
+        /// <returns>The entire node in string format, with proper indentation</returns>
         new public string ToString()
         {
             return this.ToString("");
         }
 
+        /// <summary>
+        /// Keeps track of indentation when converting nested JsonNodes to string
+        /// </summary>
+        /// <param name="tabs"></param>
+        /// <returns>The entire node in string format, with proper indentation</returns>
         public string ToString(string tabs)
         {
             StringBuilder sb = new();
@@ -37,26 +54,15 @@ namespace JsonProcessing
                 sb.Append('\t');
                 T item = this[i];
                 if (item == null)
-                {
                     sb.Append("null");
-                }
-                else if (item is string) {
-                    sb.Append('"');
-                    sb.Append(item);
-                    sb.Append('"');
-                }
-                else if (item is JsonNode)
-                {
-                    StringBuilder tabsBuilder = new();
-                    tabsBuilder.Append(tabs);
-                    tabsBuilder.Append('\t');
-                    JsonNode node = (JsonNode)item;
-                    sb.Append(node.ToString(tabsBuilder.ToString()));
-                }
+                else if (item is string)
+                    sb.Append(JsonUtility.StringToString(item.ToString()));
+                else if (item is bool)
+                    sb.Append(item.ToString().ToLower());
+                else if (item is IJsonNode)
+                    sb.Append(JsonUtility.NodeToString((IJsonNode)item, tabs));
                 else
-                {
                     sb.Append(item.ToString());
-                }
                 if (i < this.Count - 1)
                     sb.Append(',');
                 sb.Append('\n');
@@ -66,24 +72,18 @@ namespace JsonProcessing
             return sb.ToString();
         }
 
-        public string QueryToString(string search)
-        {
-            object? query = Query(search);
-            if (query == null)
-                return "null";
-            else if (query is JsonNode)
-                return ((JsonNode)query).ToString();
-            else
-                return query.ToString();
-        }
-
-        public object Query(string search)
+        /// <summary>
+        /// Searches the node and all of its children for a value with the key of "search"
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns>The object being searched, or null</returns>
+        public object? Query(string search)
         {
             Type genericType = typeof(T);
-            Type interfaceType = typeof(JsonNode);
+            Type interfaceType = typeof(IJsonNode);
             if (interfaceType.IsAssignableFrom(genericType))
             {
-                foreach (JsonNode? node in this)
+                foreach (IJsonNode? node in this)
                 {
                     if (null != node)
                     {
