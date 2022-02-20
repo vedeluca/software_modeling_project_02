@@ -77,7 +77,7 @@ namespace JsonTesting
         [TestMethod]
         public void TransformStringToObject()
         {
-            IJsonNode? root = JsonParser.StringToJsonNode(JsonString);
+            IJsonNode? root = JsonStringParser.StringToJsonNode(JsonString);
             Assert.IsNotNull(root, "Root node is null");
             string json = root.ToString();
             Assert.AreEqual(json, JsonString, "Output string does not match input string");
@@ -87,12 +87,12 @@ namespace JsonTesting
         [TestMethod]
         public void ThrowJsonParserException()
         {
-            Assert.ThrowsException<JsonParserException>(() => JsonParser.StringToJsonNode(BrokenString), "Exception expected for broken JSON string");
+            Assert.ThrowsException<JsonException>(() => JsonStringParser.StringToJsonNode(BrokenString), "Exception expected for broken JSON string");
             try
             {
-                JsonParser.StringToJsonNode(BrokenString);
+                JsonStringParser.StringToJsonNode(BrokenString);
             }
-            catch (JsonParserException e)
+            catch (JsonException e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -101,7 +101,7 @@ namespace JsonTesting
         [TestMethod]
         public void AddJsonObject()
         {
-            IJsonNode? root = JsonParser.StringToJsonNode(JsonString);
+            IJsonNode? root = JsonStringParser.StringToJsonNode(JsonString);
             Assert.IsNotNull(root, "Root node is null");
             Assert.IsInstanceOfType(root, typeof(JsonObject<string, object?>), "Root node is not an object");
             JsonObject<string, object?> rootObj = (JsonObject<string, object?>)root;
@@ -123,7 +123,7 @@ namespace JsonTesting
         [TestMethod]
         public void QueryJsonArray()
         {
-            IJsonNode? root = JsonParser.StringToJsonNode(JsonString);
+            IJsonNode? root = JsonStringParser.StringToJsonNode(JsonString);
             Assert.IsNotNull(root, "Root node is null");
             object? query = root.Query("GlossSeeAlso");
             Assert.IsNotNull(query, "Query is null");
