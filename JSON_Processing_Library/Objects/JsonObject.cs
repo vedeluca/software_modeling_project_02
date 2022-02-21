@@ -7,20 +7,15 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public class JsonObject : DataObject
+    public class JsonObject : DataNode
     {
         private readonly Dictionary<string, JsonValue> items;
-        private new readonly DataNode node;
-        public JsonObject()
+        public JsonObject() : base()
         {
             items = new Dictionary<string, JsonValue>();
-            node = new DataNode();
         }
 
-        public JsonObject(DataNode parent) : this()
-        {
-            node = new DataNode(parent);
-        }
+        public JsonObject(DataNode parent) : this() { }
 
         public override void Add(string key, dynamic? value, int line)
         {

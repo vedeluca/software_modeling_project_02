@@ -7,22 +7,17 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public class JsonArray : DataObject
+    public class JsonArray : DataNode
     {
         private readonly List<JsonValue> values;
         private DataType type;
-        private new readonly DataNode node;
         public JsonArray()
         {
             values = new List<JsonValue>();
             type = DataType.Null;
-            node = new DataNode();
         }
 
-        public JsonArray(DataNode parent) : this()
-        {
-            node = new DataNode(parent);
-        }
+        public JsonArray(DataNode parent) : this() { }
 
         public override void Add(string key, dynamic? value, int line)
         {

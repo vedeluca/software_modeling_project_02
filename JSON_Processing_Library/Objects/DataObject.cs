@@ -9,11 +9,6 @@ namespace JsonProcessing.Objects
 {
     public abstract class DataObject
     {
-        protected DataNode node;
-        public DataObject()
-        {
-            node = new DataNode();
-        }
         public abstract void Add(string key, dynamic? value, int line);
         new public abstract string ToString();
         public abstract string ToString(string tabs);

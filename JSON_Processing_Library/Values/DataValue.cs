@@ -8,7 +8,7 @@ namespace JsonProcessing.Values
 {
     public abstract class DataValue
     {
-        protected Enum type;
+        protected DataType type;
         public DataValue()
         {
             type = DataType.Empty;
