@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace JsonProcessing
+namespace JsonProcessing.Parsers
 {
     public static class JsonStringParser
     {
