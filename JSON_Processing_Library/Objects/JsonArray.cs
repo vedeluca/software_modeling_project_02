@@ -10,12 +10,12 @@ namespace JsonProcessing.Objects
     public class JsonArray : DataObject
     {
         private readonly List<JsonValue> values;
-        private JsonType type;
+        private DataType type;
         private new readonly DataNode node;
         public JsonArray()
         {
             values = new List<JsonValue>();
-            type = JsonType.Null;
+            type = DataType.Null;
             node = new DataNode();
         }
 
@@ -34,12 +34,12 @@ namespace JsonProcessing.Objects
             JsonValue item = new(value, line);
             if (values.Count > 0)
             {
-                if (type != (JsonType)item.GetType())
+                if (type != item.GetType())
                     throw new DataException(line);
             }
             else
             {
-                type = (JsonType)item.GetType();
+                type = item.GetType();
             }
             values.Add(item);
 
@@ -71,12 +71,12 @@ namespace JsonProcessing.Objects
 
         public override DataValue Query(string search)
         {
-            if (type != JsonType.Object && type != JsonType.Array)
+            if (type != DataType.Object && type != DataType.Array)
                 return new JsonValue();
             foreach (JsonValue item in values)
             {
                 JsonValue result = item.GetValue().Query(search);
-                if ((JsonType)result.GetType() != JsonType.Empty)
+                if (result.GetType() != DataType.Empty)
                     return result;
             }
             return new JsonValue();

@@ -11,11 +11,11 @@ namespace JsonProcessing.Values
         protected Enum type;
         public DataValue()
         {
-            type = EmptyType.Empty;
+            type = DataType.Empty;
         }
         protected abstract string MoreTabs(string tabs);
         public abstract dynamic GetValue();
-        new public abstract Enum GetType();
+        new public abstract DataType GetType();
         new public abstract string ToString();
         public abstract string ToString(string tabs);
     }

@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Values
 {
-    public enum EmptyType
-    {
-        Empty
-    }
-    public enum JsonType
+    public enum DataType
     {
         Empty,
         String,

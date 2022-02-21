@@ -60,10 +60,10 @@ namespace JsonProcessing.Objects
                 if (item.Key == search)
                     return item.Value;
                 JsonValue value = item.Value;
-                if ((JsonType)value.GetType() == JsonType.Object || (JsonType)value.GetType() == JsonType.Array)
+                if (value.GetType() == DataType.Object || value.GetType() == DataType.Array)
                 {
                     JsonValue result = value.GetValue().Query(search);
-                    if ((JsonType)result.GetType() != JsonType.Empty)
+                    if (result.GetType() != DataType.Empty)
                         return result;
                 }
             }

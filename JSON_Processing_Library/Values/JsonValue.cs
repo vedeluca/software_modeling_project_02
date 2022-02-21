@@ -15,7 +15,7 @@ namespace JsonProcessing.Values
         private bool booleanValue;
         private JsonObject objectValue;
         private JsonArray arrayValue;
-        private new JsonType type;
+        private new DataType type;
 
         public JsonValue() : base()
         {
@@ -32,37 +32,37 @@ namespace JsonProcessing.Values
         {
             if (value is string)
             {
-                type = JsonType.String;
+                type = DataType.String;
                 stringValue = value;
             }
             else if (value is int)
             {
-                type = JsonType.Integer;
+                type = DataType.Integer;
                 integerValue = value;
             }
             else if (value is double)
             {
-                type = JsonType.Double;
+                type = DataType.Double;
                 doubleValue = value;
             }
             else if (value is bool)
             {
-                type = JsonType.Boolean;
+                type = DataType.Boolean;
                 booleanValue = value;
             }
             else if (value is JsonArray)
             {
-                type = JsonType.Array;
+                type = DataType.Array;
                 arrayValue = value;
             }
             else if (value is JsonObject)
             {
-                type = JsonType.Object;
+                type = DataType.Object;
                 objectValue = value;
             }
             else if (value is null)
             {
-                type = JsonType.Null;
+                type = DataType.Null;
             }
             else
             {
@@ -72,23 +72,23 @@ namespace JsonProcessing.Values
 
         public override dynamic GetValue()
         {
-            if (type == JsonType.String)
+            if (type == DataType.String)
                 return stringValue;
-            else if (type == JsonType.Integer)
+            else if (type == DataType.Integer)
                 return integerValue;
-            else if (type == JsonType.Double)
+            else if (type == DataType.Double)
                 return doubleValue;
-            else if (type == JsonType.Boolean)
+            else if (type == DataType.Boolean)
                 return booleanValue;
-            else if (type == JsonType.Object)
+            else if (type == DataType.Object)
                 return objectValue;
-            else if (type == JsonType.Array)
+            else if (type == DataType.Array)
                 return arrayValue;
             else
                 return this;
         }
 
-        public override Enum GetType()
+        public override DataType GetType()
         {
             return type;
         }
@@ -100,17 +100,17 @@ namespace JsonProcessing.Values
 
         public override string ToString(string tabs)
         {
-            if (type == JsonType.String)
+            if (type == DataType.String)
                 return StringToJsonString();
-            else if (type == JsonType.Integer)
+            else if (type == DataType.Integer)
                 return integerValue.ToString();
-            else if (type == JsonType.Double)
+            else if (type == DataType.Double)
                 return doubleValue.ToString();
-            else if (type == JsonType.Boolean)
+            else if (type == DataType.Boolean)
                 return booleanValue.ToString().ToLower();
-            else if (type == JsonType.Object)
+            else if (type == DataType.Object)
                 return objectValue.ToString(MoreTabs(tabs));
-            else if (type == JsonType.Array)
+            else if (type == DataType.Array)
                 return arrayValue.ToString(MoreTabs(tabs));
             else
                 return "null";
