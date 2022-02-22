@@ -9,7 +9,7 @@ namespace JsonProcessing.Objects
 {
     public interface IDataNode
     {
-        void Add(string key, dynamic? value, int line);
+        void Add(string key, DataValue value);
         string ToString(string tabs);
         DataValue Query(string search);
     }

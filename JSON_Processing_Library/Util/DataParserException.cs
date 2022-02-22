@@ -15,5 +15,6 @@ namespace JsonProcessing.Util
         /// </summary>
         /// <param name="line"></param>
         public DataParserException(int line) : base(String.Format("Invalid format on line {0}", line)) { }
+        public DataParserException(string type) : base(String.Format("Invalid format found in {0}", type)) { }
     }
 }

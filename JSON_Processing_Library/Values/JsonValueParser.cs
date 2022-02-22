@@ -11,13 +11,6 @@ namespace JsonProcessing.Values
     public class JsonValueParser : IDataValueParser
     {
         private readonly string[] ends = { ",", "}", "]" };
-        private readonly DataNodeParser objectParser;
-        private readonly DataNodeParser arrayParser;
-        public JsonValueParser()
-        {
-            objectParser = new DataNodeParser(new JsonObjectParser());
-            arrayParser = new DataNodeParser(new JsonArrayParser());
-        }
         public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
         {
             DataValue value = ParseValue(parent, ref stringList, ref lineCounter, ref listCounter);
@@ -44,27 +37,31 @@ namespace JsonProcessing.Values
                     lineCounter++;
                 else if (target == "{")
                 {
-                    DataNode obj = objectParser.ParseDataNode(parent, ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(obj, DataType.Object, lineCounter));
+                    DataNodeParser objectParser = new(new JsonObjectParser());
+                    DataNode node = new(new JsonObject(), DataType.Object, parent);
+                    DataNode obj = objectParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
+                    return new DataValue(new JsonValue(obj, lineCounter));
                 }
                 else if (target == "[")
                 {
-                    DataNode arr = arrayParser.ParseDataNode(parent, ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(arr, DataType.Array, lineCounter));
+                    DataNodeParser arrayParser = new(new JsonArrayParser());
+                    DataNode node = new(new JsonArray(), DataType.Array, parent);
+                    DataNode arr = arrayParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
+                    return new DataValue(new JsonValue(arr, lineCounter));
                 }
                 else if (target == "\"")
                 {
                     string str = ParseString(ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(str));
+                    return new DataValue(new JsonValue(str, lineCounter));
                 }
                 else if (int.TryParse(target, out _))
-                    return new DataValue(new JsonValue(Convert.ToInt32(target)));
+                    return new DataValue(new JsonValue(Convert.ToInt32(target), lineCounter));
                 else if (double.TryParse(target, out _))
-                    return new DataValue(new JsonValue(Convert.ToDouble(target)));
+                    return new DataValue(new JsonValue(Convert.ToDouble(target), lineCounter));
                 else if (target == "true")
-                    return new DataValue(new JsonValue(true));
+                    return new DataValue(new JsonValue(true, lineCounter));
                 else if (target == "false")
-                    return new DataValue(new JsonValue(false));
+                    return new DataValue(new JsonValue(false, lineCounter));
                 else if (target == "null")
                     return new DataValue(new JsonValue(DataType.Null, lineCounter));
                 else if (!String.IsNullOrWhiteSpace(target))

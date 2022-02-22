@@ -18,24 +18,23 @@ namespace JsonProcessing.Objects
             type = DataType.Null;
         }
 
-        public void Add(string key, dynamic? value, int line)
+        public void Add(string key, DataValue value)
         {
-            Add(value, line);
+            Add(value);
         }
 
-        public void Add(dynamic? value, int line)
+        public void Add(DataValue value)
         {
-            DataValue item = new DataValue(new JsonValue(value, line));
             if (values.Count > 0)
             {
-                if (type != item.Type)
-                    throw new DataParserException(line);
+                if (type != value.Type)
+                    throw new DataParserException("Array");
             }
             else
             {
-                type = item.Type;
+                type = value.Type;
             }
-            values.Add(item);
+            values.Add(value);
 
         }
 
@@ -64,7 +63,8 @@ namespace JsonProcessing.Objects
                 return new DataValue(new JsonValue());
             foreach (DataValue item in values)
             {
-                DataValue result = item.GetValue().Query(search);
+                DataNode node = (DataNode)item.GetValue();
+                DataValue result = node.Query(search);
                 if (result.Type != DataType.Empty)
                     return result;
             }

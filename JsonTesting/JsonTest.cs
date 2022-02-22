@@ -105,28 +105,6 @@ namespace JsonTesting
             }
         }
 
-        /*[TestMethod]
-        public void AddJsonObject()
-        {
-            IJsonNode? root = JsonStringParser.StringToJsonNode(jsonString);
-            Assert.IsNotNull(root, "Root node is null");
-            Assert.IsInstanceOfType(root, typeof(JsonObject<string, object?>), "Root node is not an object");
-            JsonObject<string, object?> rootObj = (JsonObject<string, object?>)root;
-            JsonObject<string, object?> node = new(rootObj);
-            node.Add("Boolean Test", false);
-            node.Add("Number Test", -123.45);
-            node.Add("String Test", "test \\\"test\\\"");
-            rootObj.Add("node", node);
-            object? val = rootObj["node"];
-            Assert.IsNotNull(val, "Value in root is null");
-            Assert.IsInstanceOfType(val, typeof(JsonObject<string, object?>), "Value in root is not JsonObject type");
-            JsonObject<string, object?> valObj = (JsonObject<string, object?>)val;
-            Assert.AreEqual(valObj["Boolean Test"], node["Boolean Test"], "Objects do not have matching values");
-            Assert.AreEqual(valObj["Number Test"], node["Number Test"], "Objects do not have matching values");
-            Assert.AreEqual(valObj["String Test"], node["String Test"], "Objects do not have matching values");
-            Console.WriteLine(rootObj.ToString());
-        }*/
-
         [TestMethod]
         public void QueryJsonArray()
         {
@@ -136,10 +114,9 @@ namespace JsonTesting
             Assert.IsNotNull(root, "Root node is null");
             DataValue query = root.Query("GlossSeeAlso");
             Assert.IsNotNull(query, "Query is null");
-            Assert.IsInstanceOfType(query.GetValue(), typeof(JsonArray), "Queried object is not a JsonArray");
-            Assert.AreEqual(query.Type, DataType.Array, "Queried object is the wrong type");
-            JsonArray queryArr = (JsonArray)query.GetValue();
-            //Assert.AreEqual(queryArr.Count, 2, "Queried JsonArray not the correct length");
+            Assert.IsInstanceOfType(query.GetValue(), typeof(DataNode), "Queried object is not a DataNode");
+            Assert.AreEqual(query.Type, DataType.Array, "Queried objectis not a JsonArray");
+            DataNode queryArr = (DataNode)query.GetValue();
             Console.WriteLine(queryArr.ToString());
         }
     }
