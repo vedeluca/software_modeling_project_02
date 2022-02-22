@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Files
 {
-    internal interface IDataStringParser
+    public interface IDataStringParser
     {
         DataNode ParseDataString(string dataString);
     }

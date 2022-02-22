@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JsonProcessing.Values
+namespace JsonProcessing.Util
 {
     public enum DataType
     {

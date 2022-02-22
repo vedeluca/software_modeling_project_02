@@ -1,4 +1,5 @@
-﻿using JsonProcessing.Objects;
+﻿using JsonProcessing.Util;
+using JsonProcessing.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace JsonProcessing.Values
 {
     public class JsonValueParser : IDataValueParser
     {
-        private string[] ends = { ",", "}", "]" };
-        private DataNodeParser objectParser;
-        private DataNodeParser arrayParser;
+        private readonly string[] ends = { ",", "}", "]" };
+        private readonly DataNodeParser objectParser;
+        private readonly DataNodeParser arrayParser;
         public JsonValueParser()
         {
             objectParser = new DataNodeParser(new JsonObjectParser());
@@ -52,7 +53,10 @@ namespace JsonProcessing.Values
                     return new DataValue(new JsonValue(arr, DataType.Array, lineCounter));
                 }
                 else if (target == "\"")
-                    return ParseString(ref stringList, ref lineCounter, ref listCounter);
+                {
+                    string str = ParseString(ref stringList, ref lineCounter, ref listCounter);
+                    return new DataValue(new JsonValue(str));
+                }
                 else if (int.TryParse(target, out _))
                     return new DataValue(new JsonValue(Convert.ToInt32(target)));
                 else if (double.TryParse(target, out _))
@@ -70,7 +74,7 @@ namespace JsonProcessing.Values
             throw new DataException(lineCounter);
         }
 
-        private DataValue ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)
+        public string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)
         {
             StringBuilder sb = new StringBuilder();
             listCounter++;
@@ -80,7 +84,7 @@ namespace JsonProcessing.Values
                 if (target == "\"" && stringList[listCounter - 1] != "\\")
                 {
                     listCounter++;
-                    return new DataValue(new JsonValue(sb.ToString()));
+                    return sb.ToString();
                 }
                 if (target == "\n")
                     lineCounter++;

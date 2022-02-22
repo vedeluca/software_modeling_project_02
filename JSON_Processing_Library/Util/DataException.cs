@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//TODO: may need to rethink where this goes
-namespace JsonProcessing.Values
+namespace JsonProcessing.Util
 {
     public class DataException : Exception
     {
