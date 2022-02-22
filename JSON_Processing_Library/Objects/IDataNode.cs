@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public interface IDataObject
+    public interface IDataNode
     {
         void Add(string key, dynamic? value, int line);
         string ToString(string tabs);

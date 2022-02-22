@@ -9,13 +9,12 @@ namespace JsonProcessing.Values
 {
     public class JsonValue : IDataValue
     {
-        //TODO: change JsonObject and JsonArray to DataObject?
         private string stringValue;
         private int integerValue;
         private double doubleValue;
         private bool booleanValue;
-        private JsonObject objectValue;
-        private JsonArray arrayValue;
+        private DataNode objectValue;
+        private DataNode arrayValue;
         private DataType type;
         DataType IDataValue.Type
         {
@@ -29,57 +28,55 @@ namespace JsonProcessing.Values
             }
         }
 
-        public JsonValue() : base()
+        public JsonValue()
         {
             stringValue = "";
             integerValue = 0;
             doubleValue = 0;
             booleanValue = false;
-            objectValue = new JsonObject();
-            arrayValue = new JsonArray();
+            objectValue = new DataNode(new JsonObject());
+            arrayValue = new DataNode(new JsonObject());
+            type = DataType.Empty;
         }
 
-        public JsonValue(dynamic? value, int line)
-            : this()
+        public JsonValue(string value) : this()
         {
-            if (value is string)
-            {
-                type = DataType.String;
-                stringValue = value;
-            }
-            else if (value is int)
-            {
-                type = DataType.Integer;
-                integerValue = value;
-            }
-            else if (value is double)
-            {
-                type = DataType.Double;
-                doubleValue = value;
-            }
-            else if (value is bool)
-            {
-                type = DataType.Boolean;
-                booleanValue = value;
-            }
-            else if (value is JsonArray)
-            {
-                type = DataType.Array;
-                arrayValue = value;
-            }
-            else if (value is JsonObject)
-            {
-                type = DataType.Object;
+            type = DataType.String;
+            stringValue = value;
+        }
+        public JsonValue(int value) : this()
+        {
+            type = DataType.Integer;
+            integerValue = value;
+        }
+
+        public JsonValue(double value) : this()
+        {
+            type = DataType.Double;
+            doubleValue = value;
+        }
+
+        public JsonValue(bool value) : this()
+        {
+            type = DataType.Boolean;
+            booleanValue = value;
+        }
+        public JsonValue(DataNode value, DataType dataType, int line) : this()
+        {
+            type = dataType;
+            if (type == DataType.Object)
                 objectValue = value;
-            }
-            else if (value is null)
-            {
-                type = DataType.Null;
-            }
+            else if (type == DataType.Array)
+                arrayValue = value;
             else
-            {
                 throw new DataException(line);
-            }
+        }
+
+        public JsonValue(DataType dataType, int line) : this()
+        {
+            type = dataType;
+            if (type != DataType.Null)
+                throw new DataException(line);
         }
 
         public dynamic GetValue()

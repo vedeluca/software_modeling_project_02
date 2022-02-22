@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public class JsonObject : IDataObject
+    public class JsonObject : IDataNode
     {
         private readonly Dictionary<string, DataValue> items;
         public JsonObject()

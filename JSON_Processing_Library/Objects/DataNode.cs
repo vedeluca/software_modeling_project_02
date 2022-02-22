@@ -7,37 +7,37 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public class DataObject
+    public class DataNode
     {
-        private IDataObject dataObject;
-        public DataObject? Parent { get; set; }
-        public DataObject? Root { get; set; }
+        private IDataNode dataNode;
+        public DataNode? Parent { get; set; }
+        public DataNode? Root { get; set; }
 
-        public DataObject(IDataObject obj) : base()
+        public DataNode(IDataNode node) : base()
         {
-            dataObject = obj;
+            dataNode = node;
         }
 
-        public DataObject(IDataObject obj, DataObject parent) : this(obj)
+        public DataNode(IDataNode node, DataNode parent) : this(node)
         {
             Parent = parent;
             Root = parent.Root ?? parent;
         }
         public void Add(string key, dynamic? value, int line)
         {
-            dataObject.Add(key, value, line);
+            dataNode.Add(key, value, line);
         }
         public override string ToString()
         {
-            return dataObject.ToString("");
+            return dataNode.ToString("");
         }
         public string ToString(string tabs)
         {
-            return dataObject.ToString(tabs);
+            return dataNode.ToString(tabs);
         }
         public DataValue Query(string search)
         {
-            return dataObject.Query(search);
+            return dataNode.Query(search);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public class JsonArray : IDataObject
+    public class JsonArray : IDataNode
     {
         private readonly List<DataValue> values;
         private DataType type;
