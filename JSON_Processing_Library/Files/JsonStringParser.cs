@@ -41,10 +41,10 @@ namespace JsonProcessing.Files
                     return arrayParser.ParseDataNode(arr, ref jsonList, ref lineCounter, ref listCounter);
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataException(lineCounter);
+                    throw new DataParserException(lineCounter);
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserException(lineCounter);
         }
     }
 }

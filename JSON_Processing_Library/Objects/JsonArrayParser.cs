@@ -38,7 +38,7 @@ namespace JsonProcessing.Objects
                 }
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserException(lineCounter);
         }
     }
 }

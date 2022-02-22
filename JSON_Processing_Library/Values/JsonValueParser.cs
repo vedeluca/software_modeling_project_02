@@ -30,9 +30,9 @@ namespace JsonProcessing.Values
                 else if (ends.Contains(target))
                     return value;
                 else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataException(lineCounter);
+                    throw new DataParserException(lineCounter);
             }
-            throw new DataException(lineCounter);
+            throw new DataParserException(lineCounter);
         }
 
         private DataValue ParseValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -68,10 +68,10 @@ namespace JsonProcessing.Values
                 else if (target == "null")
                     return new DataValue(new JsonValue(DataType.Null, lineCounter));
                 else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataException(lineCounter);
+                    throw new DataParserException(lineCounter);
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserException(lineCounter);
         }
 
         public string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -91,7 +91,7 @@ namespace JsonProcessing.Values
                 sb.Append(target);
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserException(lineCounter);
         }
     }
 }

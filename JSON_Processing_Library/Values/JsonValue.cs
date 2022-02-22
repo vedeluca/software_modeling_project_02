@@ -70,14 +70,14 @@ namespace JsonProcessing.Values
             else if (type == DataType.Array)
                 arrayValue = value;
             else
-                throw new DataException(line);
+                throw new DataParserException(line);
         }
 
         public JsonValue(DataType dataType, int line) : this()
         {
             type = dataType;
             if (type != DataType.Null)
-                throw new DataException(line);
+                throw new DataParserException(line);
         }
 
         public dynamic GetValue()

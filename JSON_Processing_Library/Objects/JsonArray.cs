@@ -29,7 +29,7 @@ namespace JsonProcessing.Objects
             if (values.Count > 0)
             {
                 if (type != item.Type)
-                    throw new DataException(line);
+                    throw new DataParserException(line);
             }
             else
             {
