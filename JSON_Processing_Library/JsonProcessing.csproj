@@ -6,9 +6,5 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nunit3TestAdapter" Version="4.2.1" />
-  </ItemGroup>
-
+	
 </Project>
