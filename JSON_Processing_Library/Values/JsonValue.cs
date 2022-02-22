@@ -40,6 +40,7 @@ namespace JsonProcessing.Values
             type = DataType.Empty;
         }
 
+        //TODO: this is preventing adding new objects properly
         public JsonValue(object value, int line)
              : this()
         {

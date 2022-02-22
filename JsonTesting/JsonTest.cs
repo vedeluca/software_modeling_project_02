@@ -106,6 +106,29 @@ namespace JsonTesting
         }
 
         [TestMethod]
+        public void AddJsonObject()
+        {
+            DataStringParser parser = new(new JsonStringParser());
+            Assert.IsNotNull(parser, "Parser is null");
+            DataNode root = parser.ParseDataString(jsonString);
+            Assert.IsNotNull(root, "Root node is null");
+            Assert.AreEqual(root.Type, DataType.Object, "Root node is not an object");
+            DataNode node = new(new JsonObject(), DataType.Object);
+            node.Add("Boolean Test", new DataValue(new JsonValue(false, 0)));
+            node.Add("Number Test", new DataValue(new JsonValue(-123.45, 0)));
+            node.Add("String Test", new DataValue(new JsonValue("test \\\"test\\\"", 0)));
+            root.Add("node", new DataValue(new JsonValue(node, 0)));
+            /*object? val = rootObj["node"];
+            Assert.IsNotNull(val, "Value in root is null");
+            Assert.IsInstanceOfType(val, typeof(JsonObject<string, object?>), "Value in root is not JsonObject type");
+            JsonObject<string, object?> valObj = (JsonObject<string, object?>)val;
+            Assert.AreEqual(valObj["Boolean Test"], node["Boolean Test"], "Objects do not have matching values");
+            Assert.AreEqual(valObj["Number Test"], node["Number Test"], "Objects do not have matching values");
+            Assert.AreEqual(valObj["String Test"], node["String Test"], "Objects do not have matching values");
+            Console.WriteLine(rootObj.ToString());*/
+        }
+
+        [TestMethod]
         public void QueryJsonArray()
         {
             DataStringParser parser = new(new JsonStringParser());

@@ -11,6 +11,7 @@ namespace JsonProcessing.Objects
     public class DataNode
     {
         private IDataNode dataNode;
+        //TODO: I really don't like having this in here
         public DataType Type { get; set; }
         public DataNode? Parent { get; set; }
         public DataNode? Root { get; set; }
