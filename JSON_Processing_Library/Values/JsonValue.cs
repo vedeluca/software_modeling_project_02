@@ -35,8 +35,8 @@ namespace JsonProcessing.Values
             integerValue = 0;
             doubleValue = 0;
             booleanValue = false;
-            objectValue = new DataNode(new JsonObject(), DataType.Object);
-            arrayValue = new DataNode(new JsonArray(), DataType.Array);
+            objectValue = new DataNode(new JsonObject());
+            arrayValue = new DataNode(new JsonArray());
             type = DataType.Empty;
         }
 
@@ -64,13 +64,18 @@ namespace JsonProcessing.Values
                 type = DataType.Boolean;
                 booleanValue = boolean;
             }
-            else if (value is DataNode node)
+            else if (value is DataNode data)
             {
-                type = node.Type;
-                if (type == DataType.Array)
-                    arrayValue = node;
-                else if (type == DataType.Object)
-                    objectValue = node;
+                if (data.Node is JsonObject)
+                {
+                    type = DataType.Object;
+                    arrayValue = data;
+                }
+                else if (data.Node is JsonArray)
+                {
+                    type = DataType.Array;
+                    objectValue = data;
+                }
                 else
                     throw new DataParserException(line);
             }

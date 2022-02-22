@@ -38,14 +38,14 @@ namespace JsonProcessing.Values
                 else if (target == "{")
                 {
                     DataNodeParser objectParser = new(new JsonObjectParser());
-                    DataNode node = new(new JsonObject(), DataType.Object, parent);
+                    DataNode node = new(new JsonObject(), parent);
                     DataNode obj = objectParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
                     return new DataValue(new JsonValue(obj, lineCounter));
                 }
                 else if (target == "[")
                 {
                     DataNodeParser arrayParser = new(new JsonArrayParser());
-                    DataNode node = new(new JsonArray(), DataType.Array, parent);
+                    DataNode node = new(new JsonArray(), parent);
                     DataNode arr = arrayParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
                     return new DataValue(new JsonValue(arr, lineCounter));
                 }

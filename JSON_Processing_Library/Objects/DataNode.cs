@@ -10,38 +10,35 @@ namespace JsonProcessing.Objects
 {
     public class DataNode
     {
-        private IDataNode dataNode;
-        //TODO: I really don't like having this in here
-        public DataType Type { get; set; }
+        public IDataNode Node { get; set; }
         public DataNode? Parent { get; set; }
         public DataNode? Root { get; set; }
 
-        public DataNode(IDataNode node, DataType type) : base()
+        public DataNode(IDataNode node) : base()
         {
-            dataNode = node;
-            Type = type;
+            Node = node;
         }
 
-        public DataNode(IDataNode node, DataType type, DataNode parent) : this(node, type)
+        public DataNode(IDataNode node, DataNode parent) : this(node)
         {
             Parent = parent;
             Root = parent.Root ?? parent;
         }
         public void Add(string key, DataValue value)
         {
-            dataNode.Add(key, value);
+            Node.Add(key, value);
         }
         public override string ToString()
         {
-            return dataNode.ToString("");
+            return Node.ToString("");
         }
         public string ToString(string tabs)
         {
-            return dataNode.ToString(tabs);
+            return Node.ToString(tabs);
         }
         public DataValue Query(string search)
         {
-            return dataNode.Query(search);
+            return Node.Query(search);
         }
     }
 }

@@ -112,8 +112,8 @@ namespace JsonTesting
             Assert.IsNotNull(parser, "Parser is null");
             DataNode root = parser.ParseDataString(jsonString);
             Assert.IsNotNull(root, "Root node is null");
-            Assert.AreEqual(root.Type, DataType.Object, "Root node is not an object");
-            DataNode node = new(new JsonObject(), DataType.Object);
+            Assert.IsInstanceOfType(root.Node, typeof(JsonObject), "Root node is not a JsonObject");
+            DataNode node = new(new JsonObject());
             node.Add("Boolean Test", new DataValue(new JsonValue(false, 0)));
             node.Add("Number Test", new DataValue(new JsonValue(-123.45, 0)));
             node.Add("String Test", new DataValue(new JsonValue("test \\\"test\\\"", 0)));

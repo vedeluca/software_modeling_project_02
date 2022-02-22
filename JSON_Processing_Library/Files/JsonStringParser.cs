@@ -32,12 +32,12 @@ namespace JsonProcessing.Files
                     lineCounter++;
                 else if (target == "{")
                 {
-                    DataNode obj = new DataNode(new JsonObject(), DataType.Object);
+                    DataNode obj = new DataNode(new JsonObject());
                     return objectParser.ParseDataNode(obj, ref jsonList, ref lineCounter, ref listCounter);
                 }
                 else if (target == "[")
                 {
-                    DataNode arr = new DataNode(new JsonArray(), DataType.Array);
+                    DataNode arr = new DataNode(new JsonArray());
                     return arrayParser.ParseDataNode(arr, ref jsonList, ref lineCounter, ref listCounter);
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
