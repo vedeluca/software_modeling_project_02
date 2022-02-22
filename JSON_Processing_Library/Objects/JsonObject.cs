@@ -7,33 +7,26 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public class JsonObject : DataNode
+    public class JsonObject : IDataObject
     {
-        private readonly Dictionary<string, JsonValue> items;
-        public JsonObject() : base()
+        private readonly Dictionary<string, DataValue> items;
+        public JsonObject()
         {
-            items = new Dictionary<string, JsonValue>();
+            items = new Dictionary<string, DataValue>();
         }
 
-        public JsonObject(DataNode parent) : this() { }
-
-        public override void Add(string key, dynamic? value, int line)
+        public void Add(string key, dynamic? value, int line)
         {
-            items.Add(key, new JsonValue(value, line));
+            items.Add(key, new DataValue(new JsonValue(value, line)));
         }
 
-        public override string ToString()
-        {
-            return this.ToString("");
-        }
-
-        public override string ToString(string tabs)
+        public string ToString(string tabs)
         {
             StringBuilder sb = new();
             sb.Append("{\n");
             for (int i = 0; i < items.Count; i++)
             {
-                KeyValuePair<string, JsonValue> item = items.ElementAt(i);
+                KeyValuePair<string, DataValue> item = items.ElementAt(i);
                 sb.Append(tabs);
                 sb.Append("\t\"");
                 sb.Append(item.Key);
@@ -48,21 +41,21 @@ namespace JsonProcessing.Objects
             return sb.ToString();
         }
 
-        public override DataValue Query(string search)
+        public DataValue Query(string search)
         {
-            foreach (KeyValuePair<string, JsonValue> item in items)
+            foreach (KeyValuePair<string, DataValue> item in items)
             {
                 if (item.Key == search)
                     return item.Value;
-                JsonValue value = item.Value;
-                if (value.GetType() == DataType.Object || value.GetType() == DataType.Array)
+                DataValue value = item.Value;
+                if (value.Type == DataType.Object || value.Type == DataType.Array)
                 {
-                    JsonValue result = value.GetValue().Query(search);
-                    if (result.GetType() != DataType.Empty)
+                    DataValue result = value.GetValue().Query(search);
+                    if (result.Type != DataType.Empty)
                         return result;
                 }
             }
-            return new JsonValue();
+            return new DataValue(new JsonValue());
         }
     }
 }

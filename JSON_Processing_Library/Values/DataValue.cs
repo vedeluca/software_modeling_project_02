@@ -6,17 +6,27 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Values
 {
-    public abstract class DataValue
+    public class DataValue
     {
-        protected DataType type;
-        public DataValue()
+        private IDataValue dataValue;
+        public DataType Type { get; }
+        public DataValue(IDataValue value)
         {
-            type = DataType.Empty;
+            dataValue = value;
+            Type = value.Type;
         }
-        protected abstract string MoreTabs(string tabs);
-        public abstract dynamic GetValue();
-        new public abstract DataType GetType();
-        new public abstract string ToString();
-        public abstract string ToString(string tabs);
+        public dynamic GetValue()
+        {
+            return dataValue.GetValue();
+        }
+        public override string ToString()
+        {
+            return dataValue.ToString("");
+        }
+
+        public string ToString(string tabs)
+        {
+            return dataValue.ToString(tabs);
+        }
     }
 }

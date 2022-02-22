@@ -7,51 +7,44 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    public class JsonArray : DataNode
+    public class JsonArray : IDataObject
     {
-        private readonly List<JsonValue> values;
+        private readonly List<DataValue> values;
         private DataType type;
         public JsonArray()
         {
-            values = new List<JsonValue>();
+            values = new List<DataValue>();
             type = DataType.Null;
         }
 
-        public JsonArray(DataNode parent) : this() { }
-
-        public override void Add(string key, dynamic? value, int line)
+        public void Add(string key, dynamic? value, int line)
         {
             Add(value, line);
         }
 
         public void Add(dynamic? value, int line)
         {
-            JsonValue item = new(value, line);
+            DataValue item = new DataValue(new JsonValue(value, line));
             if (values.Count > 0)
             {
-                if (type != item.GetType())
+                if (type != item.Type)
                     throw new DataException(line);
             }
             else
             {
-                type = item.GetType();
+                type = item.Type;
             }
             values.Add(item);
 
         }
 
-        public override string ToString()
-        {
-            return this.ToString("");
-        }
-
-        public override string ToString(string tabs)
+        public string ToString(string tabs)
         {
             StringBuilder sb = new();
             sb.Append("[\n");
             for (int i = 0; i < values.Count; i++)
             {
-                JsonValue item = values[i];
+                DataValue item = values[i];
                 sb.Append(tabs);
                 sb.Append('\t');
                 sb.Append(item.ToString(tabs));
@@ -64,17 +57,17 @@ namespace JsonProcessing.Objects
             return sb.ToString();
         }
 
-        public override DataValue Query(string search)
+        public DataValue Query(string search)
         {
             if (type != DataType.Object && type != DataType.Array)
-                return new JsonValue();
-            foreach (JsonValue item in values)
+                return new DataValue(new JsonValue());
+            foreach (DataValue item in values)
             {
-                JsonValue result = item.GetValue().Query(search);
-                if (result.GetType() != DataType.Empty)
+                DataValue result = item.GetValue().Query(search);
+                if (result.Type != DataType.Empty)
                     return result;
             }
-            return new JsonValue();
+            return new DataValue(new JsonValue());
         }
     }
 }

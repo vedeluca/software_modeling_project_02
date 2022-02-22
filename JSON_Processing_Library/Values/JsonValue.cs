@@ -7,15 +7,27 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Values
 {
-    public class JsonValue : DataValue
+    public class JsonValue : IDataValue
     {
+        //TODO: change JsonObject and JsonArray to DataObject?
         private string stringValue;
         private int integerValue;
         private double doubleValue;
         private bool booleanValue;
         private JsonObject objectValue;
         private JsonArray arrayValue;
-        private new DataType type;
+        private DataType type;
+        DataType IDataValue.Type
+        {
+            get
+            {
+                return type;
+            }
+            set
+            {
+                type = value;
+            }
+        }
 
         public JsonValue() : base()
         {
@@ -70,7 +82,7 @@ namespace JsonProcessing.Values
             }
         }
 
-        public override dynamic GetValue()
+        public dynamic GetValue()
         {
             if (type == DataType.String)
                 return stringValue;
@@ -88,17 +100,7 @@ namespace JsonProcessing.Values
                 return this;
         }
 
-        public override DataType GetType()
-        {
-            return type;
-        }
-
-        public override string ToString()
-        {
-            return this.ToString("");
-        }
-
-        public override string ToString(string tabs)
+        public string ToString(string tabs)
         {
             if (type == DataType.String)
                 return StringToJsonString();
@@ -125,7 +127,7 @@ namespace JsonProcessing.Values
             return sb.ToString();
         }
 
-        protected override string MoreTabs(string tabs)
+        private static string MoreTabs(string tabs)
         {
             StringBuilder sb = new();
             sb.Append(tabs);
