@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
+    //This maybe should have been split between array and object
     public class DataNode
     {
         public IDataNode Node { get; set; }
@@ -28,6 +29,11 @@ namespace JsonProcessing.Objects
         {
             Node.Add(key, value);
         }
+
+        public void Add(DataValue value)
+        {
+            Node.Add("", value);
+        }
         public override string ToString()
         {
             return Node.ToString("");
@@ -39,6 +45,14 @@ namespace JsonProcessing.Objects
         public DataValue Query(string search)
         {
             return Node.Query(search);
+        }
+        public DataValue Get(string key)
+        {
+            return Node.Get(key);
+        }
+        public DataValue Get(int index)
+        {
+            return Node.Get(index);
         }
     }
 }

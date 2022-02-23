@@ -58,5 +58,15 @@ namespace JsonProcessing.Objects
             }
             return new DataValue(new JsonValue());
         }
+
+        public DataValue Get(string key)
+        {
+            return items[key];
+        }
+
+        public DataValue Get(int index)
+        {
+            return items.ElementAt(index).Value;
+        }
     }
 }

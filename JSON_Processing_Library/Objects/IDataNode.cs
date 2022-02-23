@@ -12,5 +12,7 @@ namespace JsonProcessing.Objects
         void Add(string key, DataValue value);
         string ToString(string tabs);
         DataValue Query(string search);
+        DataValue Get(string key);
+        DataValue Get(int index);
     }
 }

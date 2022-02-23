@@ -29,7 +29,7 @@ namespace JsonProcessing.Objects
                 else if (!String.IsNullOrWhiteSpace(target))
                 {
                     DataValue value = valueParser.ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter, "]");
-                    node.Add("", value);
+                    node.Add(value);
                     if (stringList[listCounter] == "]")
                     {
                         listCounter++;

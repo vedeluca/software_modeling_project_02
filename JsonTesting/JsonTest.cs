@@ -118,14 +118,14 @@ namespace JsonTesting
             node.Add("Number Test", new DataValue(new JsonValue(-123.45)));
             node.Add("String Test", new DataValue(new JsonValue("test \\\"test\\\"")));
             root.Add("node", new DataValue(new JsonValue(node)));
-            /*object? val = rootObj["node"];
+            DataValue val = root.Get("node");
             Assert.IsNotNull(val, "Value in root is null");
-            Assert.IsInstanceOfType(val, typeof(JsonObject<string, object?>), "Value in root is not JsonObject type");
-            JsonObject<string, object?> valObj = (JsonObject<string, object?>)val;
-            Assert.AreEqual(valObj["Boolean Test"], node["Boolean Test"], "Objects do not have matching values");
-            Assert.AreEqual(valObj["Number Test"], node["Number Test"], "Objects do not have matching values");
-            Assert.AreEqual(valObj["String Test"], node["String Test"], "Objects do not have matching values");
-            Console.WriteLine(rootObj.ToString());*/
+            Assert.IsInstanceOfType(val.GetValue(), typeof(DataNode), "Value in root is not JsonObject type");
+            DataNode valNode = (DataNode)val.GetValue();
+            Assert.AreEqual(valNode.Get("Boolean Test"), node.Get("Boolean Test"), "Objects do not have matching values");
+            Assert.AreEqual(valNode.Get("Number Test"), node.Get("Number Test"), "Objects do not have matching values");
+            Assert.AreEqual(valNode.Get("String Test"), node.Get("String Test"), "Objects do not have matching values");
+            Console.WriteLine(root.ToString());
         }
 
         [TestMethod]
