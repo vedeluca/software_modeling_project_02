@@ -1,4 +1,5 @@
 ﻿using JsonProcessing.Values;
+using JsonProcessing.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
+    //This maybe should have been split between array and object
     public class DataNode
     {
-        private IDataNode dataNode;
+        public IDataNode Node { get; set; }
         public DataNode? Parent { get; set; }
         public DataNode? Root { get; set; }
 
         public DataNode(IDataNode node) : base()
         {
-            dataNode = node;
+            Node = node;
         }
 
         public DataNode(IDataNode node, DataNode parent) : this(node)
@@ -23,21 +25,34 @@ namespace JsonProcessing.Objects
             Parent = parent;
             Root = parent.Root ?? parent;
         }
-        public void Add(string key, dynamic? value, int line)
+        public void Add(string key, DataValue value)
         {
-            dataNode.Add(key, value, line);
+            Node.Add(key, value);
+        }
+
+        public void Add(DataValue value)
+        {
+            Node.Add("", value);
         }
         public override string ToString()
         {
-            return dataNode.ToString("");
+            return Node.ToString("");
         }
         public string ToString(string tabs)
         {
-            return dataNode.ToString(tabs);
+            return Node.ToString(tabs);
         }
         public DataValue Query(string search)
         {
-            return dataNode.Query(search);
+            return Node.Query(search);
+        }
+        public DataValue Get(string key)
+        {
+            return Node.Get(key);
+        }
+        public DataValue Get(int index)
+        {
+            return Node.Get(index);
         }
     }
 }

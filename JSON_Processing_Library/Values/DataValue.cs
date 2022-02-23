@@ -16,7 +16,7 @@ namespace JsonProcessing.Values
             dataValue = value;
             Type = value.Type;
         }
-        public dynamic GetValue()
+        public object GetValue()
         {
             return dataValue.GetValue();
         }

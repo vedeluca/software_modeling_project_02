@@ -15,6 +15,7 @@ namespace JsonProcessing.Util
         Boolean,
         Array,
         Object,
-        Null
+        Null,
+        Value
     }
 }

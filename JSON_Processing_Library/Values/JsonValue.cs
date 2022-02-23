@@ -36,51 +36,58 @@ namespace JsonProcessing.Values
             doubleValue = 0;
             booleanValue = false;
             objectValue = new DataNode(new JsonObject());
-            arrayValue = new DataNode(new JsonObject());
+            arrayValue = new DataNode(new JsonArray());
             type = DataType.Empty;
         }
 
-        public JsonValue(string value) : this()
+        //TODO: this is preventing adding new objects properly
+        public JsonValue(object value)
+             : this()
         {
-            type = DataType.String;
-            stringValue = value;
-        }
-        public JsonValue(int value) : this()
-        {
-            type = DataType.Integer;
-            integerValue = value;
-        }
-
-        public JsonValue(double value) : this()
-        {
-            type = DataType.Double;
-            doubleValue = value;
-        }
-
-        public JsonValue(bool value) : this()
-        {
-            type = DataType.Boolean;
-            booleanValue = value;
-        }
-        public JsonValue(DataNode value, DataType dataType, int line) : this()
-        {
-            type = dataType;
-            if (type == DataType.Object)
-                objectValue = value;
-            else if (type == DataType.Array)
-                arrayValue = value;
+            if (value is string @string)
+            {
+                type = DataType.String;
+                stringValue = @string;
+            }
+            else if (value is int @int)
+            {
+                type = DataType.Integer;
+                integerValue = @int;
+            }
+            else if (value is double @double)
+            {
+                type = DataType.Double;
+                doubleValue = @double;
+            }
+            else if (value is bool boolean)
+            {
+                type = DataType.Boolean;
+                booleanValue = boolean;
+            }
+            else if (value is DataNode data)
+            {
+                if (data.Node is JsonObject)
+                {
+                    type = DataType.Object;
+                    objectValue = data;
+                }
+                else if (data.Node is JsonArray)
+                {
+                    type = DataType.Array;
+                    arrayValue = data;
+                }
+                else
+                    throw new DataParserTypeException(DataType.Value);
+            }
+            else if (value is DataType dataType && dataType == DataType.Null)
+                type = DataType.Null;
             else
-                throw new DataException(line);
+            {
+                throw new DataParserTypeException(DataType.Value);
+            }
         }
 
-        public JsonValue(DataType dataType, int line) : this()
-        {
-            type = dataType;
-            if (type != DataType.Null)
-                throw new DataException(line);
-        }
-
-        public dynamic GetValue()
+        public object GetValue()
         {
             if (type == DataType.String)
                 return stringValue;

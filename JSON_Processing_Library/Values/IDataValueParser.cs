@@ -9,7 +9,7 @@ namespace JsonProcessing.Values
 {
     public interface IDataValueParser
     {
-        DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter);
+        DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter, string end);
         string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter);
     }
 }

@@ -10,16 +10,11 @@ namespace JsonProcessing.Values
 {
     public class JsonValueParser : IDataValueParser
     {
-        private readonly string[] ends = { ",", "}", "]" };
-        private readonly DataNodeParser objectParser;
-        private readonly DataNodeParser arrayParser;
-        public JsonValueParser()
+        public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter, string end)
         {
-            objectParser = new DataNodeParser(new JsonObjectParser());
-            arrayParser = new DataNodeParser(new JsonArrayParser());
-        }
-        public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
-        {
+            List<string> ends = new();
+            ends.Add(",");
+            ends.Add(end);
             DataValue value = ParseValue(parent, ref stringList, ref lineCounter, ref listCounter);
             while (listCounter < stringList.Length)
             {
@@ -30,9 +25,9 @@ namespace JsonProcessing.Values
                 else if (ends.Contains(target))
                     return value;
                 else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
             }
-            throw new DataException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
 
         private DataValue ParseValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -44,13 +39,17 @@ namespace JsonProcessing.Values
                     lineCounter++;
                 else if (target == "{")
                 {
-                    DataNode obj = objectParser.ParseDataNode(parent, ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(obj, DataType.Object, lineCounter));
+                    DataNodeParser objectParser = new(new JsonObjectParser());
+                    DataNode node = new(new JsonObject(), parent);
+                    DataNode obj = objectParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
+                    return new DataValue(new JsonValue(obj));
                 }
                 else if (target == "[")
                 {
-                    DataNode arr = arrayParser.ParseDataNode(parent, ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(arr, DataType.Array, lineCounter));
+                    DataNodeParser arrayParser = new(new JsonArrayParser());
+                    DataNode node = new(new JsonArray(), parent);
+                    DataNode arr = arrayParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
+                    return new DataValue(new JsonValue(arr));
                 }
                 else if (target == "\"")
                 {
@@ -66,12 +65,12 @@ namespace JsonProcessing.Values
                 else if (target == "false")
                     return new DataValue(new JsonValue(false));
                 else if (target == "null")
-                    return new DataValue(new JsonValue(DataType.Null, lineCounter));
+                    return new DataValue(new JsonValue(DataType.Null));
                 else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
 
         public string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -91,7 +90,7 @@ namespace JsonProcessing.Values
                 sb.Append(target);
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
     }
 }

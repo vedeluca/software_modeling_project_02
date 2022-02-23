@@ -4,20 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JsonProcessing;
+using JsonProcessing.Files;
+using JsonProcessing.Objects;
+using JsonProcessing.Util;
+using JsonProcessing.Values;
 
 namespace JsonTesting
 {
     [TestClass]
     public class JsonTest
     {
-        private string JsonString;
-        private string BrokenString;
+        private string jsonString;
+        private string brokenString;
 
         [TestInitialize]
         public void JsonTestInit()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.Append("{\n");//1
             sb.Append("\t\"glossary\": {\n");//2
             sb.Append("\t\t\"title\": \"example glossary\",\n");//3
@@ -36,16 +39,16 @@ namespace JsonTesting
             sb.Append("\t\t\t\t\t\t\t\"GML\",\n");//16
             sb.Append("\t\t\t\t\t\t\t\"XML\"\n");//17
             sb.Append("\t\t\t\t\t\t]\n");//18
-            sb.Append("\t\t\t\t\t},\n");//16
-            sb.Append("\t\t\t\t\t\"GlossSee\": null\n");//17
-            sb.Append("\t\t\t\t}\n");//18
-            sb.Append("\t\t\t}\n");//19
-            sb.Append("\t\t}\n");//20
-            sb.Append("\t}\n");//21
-            sb.Append("}");//22
-            JsonString = sb.ToString();
+            sb.Append("\t\t\t\t\t},\n");//19
+            sb.Append("\t\t\t\t\t\"GlossSee\": null\n");//20
+            sb.Append("\t\t\t\t}\n");//21
+            sb.Append("\t\t\t}\n");//22
+            sb.Append("\t\t}\n");//23
+            sb.Append("\t}\n");//24
+            sb.Append("}");//25
+            jsonString = sb.ToString();
 
-            StringBuilder broken = new StringBuilder();
+            StringBuilder broken = new();
             broken.Append("{\n");//1
             broken.Append("\t\"glossary\": {\n");//2
             broken.Append("\t\t\"title\": \"example glossary\",\n");//3
@@ -64,35 +67,39 @@ namespace JsonTesting
             broken.Append("\t\t\t\t\t\t\t\"GML\",\n");//16
             broken.Append("\t\t\t\t\t\t\t\"XML\"\n");//17
             broken.Append("\t\t\t\t\t\t}\n");//18............This is where it should break
-            broken.Append("\t\t\t\t\t},\n");//16
-            broken.Append("\t\t\t\t\t\"GlossSee\": null\n");//17
-            broken.Append("\t\t\t\t}\n");//18
-            broken.Append("\t\t\t}\n");//19
-            broken.Append("\t\t}\n");//20
-            broken.Append("\t}\n");//21
-            broken.Append("}");//22
-            BrokenString = broken.ToString();
+            broken.Append("\t\t\t\t\t},\n");//19
+            broken.Append("\t\t\t\t\t\"GlossSee\": null\n");//20
+            broken.Append("\t\t\t\t}\n");//21
+            broken.Append("\t\t\t}\n");//22
+            broken.Append("\t\t}\n");//23
+            broken.Append("\t}\n");//24
+            broken.Append("}");//25
+            brokenString = broken.ToString();
         }
 
         [TestMethod]
         public void TransformStringToObject()
         {
-            IJsonNode? root = JsonStringParser.StringToJsonNode(JsonString);
+            DataStringParser parser = new(new JsonStringParser());
+            Assert.IsNotNull(parser, "Parser is null");
+            DataNode root = parser.ParseDataString(jsonString);
             Assert.IsNotNull(root, "Root node is null");
             string json = root.ToString();
-            Assert.AreEqual(json, JsonString, "Output string does not match input string");
+            Assert.AreEqual(json, jsonString, "Output string does not match input string");
             Console.WriteLine(json);
         }
 
         [TestMethod]
-        public void ThrowJsonParserException()
+        public void ThrowDataParserException()
         {
-            Assert.ThrowsException<JsonException>(() => JsonStringParser.StringToJsonNode(BrokenString), "Exception expected for broken JSON string");
+            DataStringParser parser = new(new JsonStringParser());
+            Assert.IsNotNull(parser, "Parser is null");
+            Assert.ThrowsException<DataParserLineException>(() => parser.ParseDataString(brokenString), "Exception expected for broken JSON string");
             try
             {
-                JsonStringParser.StringToJsonNode(BrokenString);
+                parser.ParseDataString(brokenString);
             }
-            catch (JsonException e)
+            catch (DataParserLineException e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -101,35 +108,38 @@ namespace JsonTesting
         [TestMethod]
         public void AddJsonObject()
         {
-            IJsonNode? root = JsonStringParser.StringToJsonNode(JsonString);
+            DataStringParser parser = new(new JsonStringParser());
+            Assert.IsNotNull(parser, "Parser is null");
+            DataNode root = parser.ParseDataString(jsonString);
             Assert.IsNotNull(root, "Root node is null");
-            Assert.IsInstanceOfType(root, typeof(JsonObject<string, object?>), "Root node is not an object");
-            JsonObject<string, object?> rootObj = (JsonObject<string, object?>)root;
-            JsonObject<string, object?> node = new(rootObj);
-            node.Add("Boolean Test", false);
-            node.Add("Number Test", -123.45);
-            node.Add("String Test", "test \\\"test\\\"");
-            rootObj.Add("node", node);
-            object? val = rootObj["node"];
+            Assert.IsInstanceOfType(root.Node, typeof(JsonObject), "Root node is not a JsonObject");
+            DataNode node = new(new JsonObject(), root);
+            node.Add("Boolean Test", new DataValue(new JsonValue(false)));
+            node.Add("Number Test", new DataValue(new JsonValue(-123.45)));
+            node.Add("String Test", new DataValue(new JsonValue("test \\\"test\\\"")));
+            root.Add("node", new DataValue(new JsonValue(node)));
+            DataValue val = root.Get("node");
             Assert.IsNotNull(val, "Value in root is null");
-            Assert.IsInstanceOfType(val, typeof(JsonObject<string, object?>), "Value in root is not JsonObject type");
-            JsonObject<string, object?> valObj = (JsonObject<string, object?>)val;
-            Assert.AreEqual(valObj["Boolean Test"], node["Boolean Test"], "Objects do not have matching values");
-            Assert.AreEqual(valObj["Number Test"], node["Number Test"], "Objects do not have matching values");
-            Assert.AreEqual(valObj["String Test"], node["String Test"], "Objects do not have matching values");
-            Console.WriteLine(rootObj.ToString());
+            Assert.IsInstanceOfType(val.GetValue(), typeof(DataNode), "Value in root is not JsonObject type");
+            DataNode valNode = (DataNode)val.GetValue();
+            Assert.AreEqual(valNode.Get("Boolean Test"), node.Get("Boolean Test"), "Objects do not have matching values");
+            Assert.AreEqual(valNode.Get("Number Test"), node.Get("Number Test"), "Objects do not have matching values");
+            Assert.AreEqual(valNode.Get("String Test"), node.Get("String Test"), "Objects do not have matching values");
+            Console.WriteLine(root.ToString());
         }
 
         [TestMethod]
         public void QueryJsonArray()
         {
-            IJsonNode? root = JsonStringParser.StringToJsonNode(JsonString);
+            DataStringParser parser = new(new JsonStringParser());
+            Assert.IsNotNull(parser, "Parser is null");
+            DataNode root = parser.ParseDataString(jsonString);
             Assert.IsNotNull(root, "Root node is null");
-            object? query = root.Query("GlossSeeAlso");
+            DataValue query = root.Query("GlossSeeAlso");
             Assert.IsNotNull(query, "Query is null");
-            Assert.IsInstanceOfType(query, typeof(JsonArray<object?>), "Queried object is not a JsonArray");
-            JsonArray<object?> queryArr = (JsonArray<object?>)query;
-            Assert.AreEqual(queryArr.Count, 2, "Queried JsonArray not the correct length");
+            Assert.IsInstanceOfType(query.GetValue(), typeof(DataNode), "Queried object is not a DataNode");
+            Assert.AreEqual(query.Type, DataType.Array, "Queried objectis not a JsonArray");
+            DataNode queryArr = (DataNode)query.GetValue();
             Console.WriteLine(queryArr.ToString());
         }
     }

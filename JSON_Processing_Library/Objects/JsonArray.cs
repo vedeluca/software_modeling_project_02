@@ -18,24 +18,23 @@ namespace JsonProcessing.Objects
             type = DataType.Null;
         }
 
-        public void Add(string key, dynamic? value, int line)
+        public void Add(string key, DataValue value)
         {
-            Add(value, line);
+            Add(value);
         }
 
-        public void Add(dynamic? value, int line)
+        public void Add(DataValue value)
         {
-            DataValue item = new DataValue(new JsonValue(value, line));
             if (values.Count > 0)
             {
-                if (type != item.Type)
-                    throw new DataException(line);
+                if (type != value.Type)
+                    throw new DataParserTypeException(DataType.Array);
             }
             else
             {
-                type = item.Type;
+                type = value.Type;
             }
-            values.Add(item);
+            values.Add(value);
 
         }
 
@@ -64,11 +63,24 @@ namespace JsonProcessing.Objects
                 return new DataValue(new JsonValue());
             foreach (DataValue item in values)
             {
-                DataValue result = item.GetValue().Query(search);
+                DataNode node = (DataNode)item.GetValue();
+                DataValue result = node.Query(search);
                 if (result.Type != DataType.Empty)
                     return result;
             }
             return new DataValue(new JsonValue());
+        }
+
+        public DataValue Get(string key)
+        {
+            if (int.TryParse(key, out _))
+                return values[Convert.ToInt32(key)];
+            else
+                throw new ArgumentException(String.Format("Parameter {0} needs to be an integer for JsonArray.Get()", key));
+        }
+        public DataValue Get(int index)
+        {
+            return values[index];
         }
     }
 }

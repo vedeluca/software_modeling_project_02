@@ -14,9 +14,9 @@ namespace JsonProcessing.Values
         {
             dataValueParser = parser;
         }
-        public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
+        public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter, string end)
         {
-            return dataValueParser.ParseDataValue(parent, ref stringList, ref lineCounter, ref listCounter);
+            return dataValueParser.ParseDataValue(parent, ref stringList, ref lineCounter, ref listCounter, end);
         }
 
         public string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)

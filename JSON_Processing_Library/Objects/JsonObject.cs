@@ -16,9 +16,9 @@ namespace JsonProcessing.Objects
             items = new Dictionary<string, DataValue>();
         }
 
-        public void Add(string key, dynamic? value, int line)
+        public void Add(string key, DataValue value)
         {
-            items.Add(key, new DataValue(new JsonValue(value, line)));
+            items.Add(key, value);
         }
 
         public string ToString(string tabs)
@@ -48,15 +48,25 @@ namespace JsonProcessing.Objects
             {
                 if (item.Key == search)
                     return item.Value;
-                DataValue value = item.Value;
-                if (value.Type == DataType.Object || value.Type == DataType.Array)
+                object value = item.Value.GetValue();
+                if (value is DataNode node)
                 {
-                    DataValue result = value.GetValue().Query(search);
+                    DataValue result = node.Query(search);
                     if (result.Type != DataType.Empty)
                         return result;
                 }
             }
             return new DataValue(new JsonValue());
+        }
+
+        public DataValue Get(string key)
+        {
+            return items[key];
+        }
+
+        public DataValue Get(int index)
+        {
+            return items.ElementAt(index).Value;
         }
     }
 }

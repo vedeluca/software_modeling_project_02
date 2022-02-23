@@ -31,7 +31,7 @@ namespace JsonProcessing.Objects
                     string key = valueParser.ParseString(ref stringList, ref lineCounter, ref listCounter);
                     DataValue value = ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter);
                     listCounter++;
-                    node.Add(key, value, lineCounter);
+                    node.Add(key, value);
                     if (stringList[listCounter - 1] == "}")
                     {
                         return node;
@@ -39,11 +39,11 @@ namespace JsonProcessing.Objects
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
                 {
-                    throw new DataException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
                 }
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
 
         private DataValue ParseDataValue(DataNode node, ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -59,15 +59,15 @@ namespace JsonProcessing.Objects
                 else if (subtarget == ":")
                 {
                     listCounter++;
-                    return valueParser.ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter);
+                    return valueParser.ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter, "}");
                 }
                 else if (!String.IsNullOrWhiteSpace(subtarget))
                 {
-                    throw new DataException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
                 }
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
     }
 }

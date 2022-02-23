@@ -28,8 +28,8 @@ namespace JsonProcessing.Objects
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
                 {
-                    DataValue value = valueParser.ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter);
-                    node.Add("", value, lineCounter);
+                    DataValue value = valueParser.ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter, "]");
+                    node.Add(value);
                     if (stringList[listCounter] == "]")
                     {
                         listCounter++;
@@ -38,7 +38,7 @@ namespace JsonProcessing.Objects
                 }
                 listCounter++;
             }
-            throw new DataException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
     }
 }
