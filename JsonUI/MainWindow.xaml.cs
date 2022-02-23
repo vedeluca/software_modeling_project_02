@@ -12,6 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using JsonProcessing.Files;
+using JsonProcessing.Objects;
+using System.IO;
 
 namespace JsonUI
 {
@@ -23,6 +27,17 @@ namespace JsonUI
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void MenuOpen(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                DataFileParser fileParser = new(new JsonFileParser());
+                DataNode node = fileParser.ParseDataFile(openFileDialog.FileName);
+                testText.Text = node.ToString();
+            }
         }
     }
 }
