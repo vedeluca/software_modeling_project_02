@@ -28,7 +28,7 @@ namespace JsonProcessing.Objects
             if (values.Count > 0)
             {
                 if (type != value.Type)
-                    throw new DataParserException("Array");
+                    throw new DataParserTypeException(DataType.Array);
             }
             else
             {

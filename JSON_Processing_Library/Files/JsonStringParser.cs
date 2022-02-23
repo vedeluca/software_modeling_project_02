@@ -25,26 +25,33 @@ namespace JsonProcessing.Files
                 throw new NullReferenceException();
             int lineCounter = 1;
             int listCounter = 0;
-            while (listCounter < jsonList.Length)
+            try
             {
-                string target = jsonList[listCounter];
-                if (target == "\n")
-                    lineCounter++;
-                else if (target == "{")
+                while (listCounter < jsonList.Length)
                 {
-                    DataNode obj = new DataNode(new JsonObject());
-                    return objectParser.ParseDataNode(obj, ref jsonList, ref lineCounter, ref listCounter);
+                    string target = jsonList[listCounter];
+                    if (target == "\n")
+                        lineCounter++;
+                    else if (target == "{")
+                    {
+                        DataNode obj = new(new JsonObject());
+                        return objectParser.ParseDataNode(obj, ref jsonList, ref lineCounter, ref listCounter);
+                    }
+                    else if (target == "[")
+                    {
+                        DataNode arr = new(new JsonArray());
+                        return arrayParser.ParseDataNode(arr, ref jsonList, ref lineCounter, ref listCounter);
+                    }
+                    else if (!String.IsNullOrWhiteSpace(target))
+                        throw new DataParserLineException(lineCounter);
+                    listCounter++;
                 }
-                else if (target == "[")
-                {
-                    DataNode arr = new DataNode(new JsonArray());
-                    return arrayParser.ParseDataNode(arr, ref jsonList, ref lineCounter, ref listCounter);
-                }
-                else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataParserException(lineCounter);
-                listCounter++;
+                throw new DataParserLineException(lineCounter);
             }
-            throw new DataParserException(lineCounter);
+            catch (DataParserTypeException ex)
+            {
+                throw new DataParserException(ex.Type.ToString(), lineCounter);
+            }
         }
     }
 }

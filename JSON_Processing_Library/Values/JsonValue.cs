@@ -41,7 +41,7 @@ namespace JsonProcessing.Values
         }
 
         //TODO: this is preventing adding new objects properly
-        public JsonValue(object value, int line)
+        public JsonValue(object value)
              : this()
         {
             if (value is string @string)
@@ -69,21 +69,21 @@ namespace JsonProcessing.Values
                 if (data.Node is JsonObject)
                 {
                     type = DataType.Object;
-                    arrayValue = data;
+                    objectValue = data;
                 }
                 else if (data.Node is JsonArray)
                 {
                     type = DataType.Array;
-                    objectValue = data;
+                    arrayValue = data;
                 }
                 else
-                    throw new DataParserException(line);
+                    throw new DataParserTypeException(DataType.Value);
             }
             else if (value is DataType dataType && dataType == DataType.Null)
                 type = DataType.Null;
             else
             {
-                throw new DataParserException(line);
+                throw new DataParserTypeException(DataType.Value);
             }
         }
 

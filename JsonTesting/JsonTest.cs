@@ -39,13 +39,13 @@ namespace JsonTesting
             sb.Append("\t\t\t\t\t\t\t\"GML\",\n");//16
             sb.Append("\t\t\t\t\t\t\t\"XML\"\n");//17
             sb.Append("\t\t\t\t\t\t]\n");//18
-            sb.Append("\t\t\t\t\t},\n");//16
-            sb.Append("\t\t\t\t\t\"GlossSee\": null\n");//17
-            sb.Append("\t\t\t\t}\n");//18
-            sb.Append("\t\t\t}\n");//19
-            sb.Append("\t\t}\n");//20
-            sb.Append("\t}\n");//21
-            sb.Append("}");//22
+            sb.Append("\t\t\t\t\t},\n");//19
+            sb.Append("\t\t\t\t\t\"GlossSee\": null\n");//20
+            sb.Append("\t\t\t\t}\n");//21
+            sb.Append("\t\t\t}\n");//22
+            sb.Append("\t\t}\n");//23
+            sb.Append("\t}\n");//24
+            sb.Append("}");//25
             jsonString = sb.ToString();
 
             StringBuilder broken = new();
@@ -67,13 +67,13 @@ namespace JsonTesting
             broken.Append("\t\t\t\t\t\t\t\"GML\",\n");//16
             broken.Append("\t\t\t\t\t\t\t\"XML\"\n");//17
             broken.Append("\t\t\t\t\t\t}\n");//18............This is where it should break
-            broken.Append("\t\t\t\t\t},\n");//16
-            broken.Append("\t\t\t\t\t\"GlossSee\": null\n");//17
-            broken.Append("\t\t\t\t}\n");//18
-            broken.Append("\t\t\t}\n");//19
-            broken.Append("\t\t}\n");//20
-            broken.Append("\t}\n");//21
-            broken.Append("}");//22
+            broken.Append("\t\t\t\t\t},\n");//19
+            broken.Append("\t\t\t\t\t\"GlossSee\": null\n");//20
+            broken.Append("\t\t\t\t}\n");//21
+            broken.Append("\t\t\t}\n");//22
+            broken.Append("\t\t}\n");//23
+            broken.Append("\t}\n");//24
+            broken.Append("}");//25
             brokenString = broken.ToString();
         }
 
@@ -94,12 +94,12 @@ namespace JsonTesting
         {
             DataStringParser parser = new(new JsonStringParser());
             Assert.IsNotNull(parser, "Parser is null");
-            Assert.ThrowsException<DataParserException>(() => parser.ParseDataString(brokenString), "Exception expected for broken JSON string");
+            Assert.ThrowsException<DataParserLineException>(() => parser.ParseDataString(brokenString), "Exception expected for broken JSON string");
             try
             {
                 parser.ParseDataString(brokenString);
             }
-            catch (DataParserException e)
+            catch (DataParserLineException e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -113,11 +113,11 @@ namespace JsonTesting
             DataNode root = parser.ParseDataString(jsonString);
             Assert.IsNotNull(root, "Root node is null");
             Assert.IsInstanceOfType(root.Node, typeof(JsonObject), "Root node is not a JsonObject");
-            DataNode node = new(new JsonObject());
-            node.Add("Boolean Test", new DataValue(new JsonValue(false, 0)));
-            node.Add("Number Test", new DataValue(new JsonValue(-123.45, 0)));
-            node.Add("String Test", new DataValue(new JsonValue("test \\\"test\\\"", 0)));
-            root.Add("node", new DataValue(new JsonValue(node, 0)));
+            DataNode node = new(new JsonObject(), root);
+            node.Add("Boolean Test", new DataValue(new JsonValue(false)));
+            node.Add("Number Test", new DataValue(new JsonValue(-123.45)));
+            node.Add("String Test", new DataValue(new JsonValue("test \\\"test\\\"")));
+            root.Add("node", new DataValue(new JsonValue(node)));
             /*object? val = rootObj["node"];
             Assert.IsNotNull(val, "Value in root is null");
             Assert.IsInstanceOfType(val, typeof(JsonObject<string, object?>), "Value in root is not JsonObject type");

@@ -10,9 +10,11 @@ namespace JsonProcessing.Values
 {
     public class JsonValueParser : IDataValueParser
     {
-        private readonly string[] ends = { ",", "}", "]" };
-        public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
+        public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter, string end)
         {
+            List<string> ends = new();
+            ends.Add(",");
+            ends.Add(end);
             DataValue value = ParseValue(parent, ref stringList, ref lineCounter, ref listCounter);
             while (listCounter < stringList.Length)
             {
@@ -23,9 +25,9 @@ namespace JsonProcessing.Values
                 else if (ends.Contains(target))
                     return value;
                 else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataParserException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
             }
-            throw new DataParserException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
 
         private DataValue ParseValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -40,35 +42,35 @@ namespace JsonProcessing.Values
                     DataNodeParser objectParser = new(new JsonObjectParser());
                     DataNode node = new(new JsonObject(), parent);
                     DataNode obj = objectParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(obj, lineCounter));
+                    return new DataValue(new JsonValue(obj));
                 }
                 else if (target == "[")
                 {
                     DataNodeParser arrayParser = new(new JsonArrayParser());
                     DataNode node = new(new JsonArray(), parent);
                     DataNode arr = arrayParser.ParseDataNode(node, ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(arr, lineCounter));
+                    return new DataValue(new JsonValue(arr));
                 }
                 else if (target == "\"")
                 {
                     string str = ParseString(ref stringList, ref lineCounter, ref listCounter);
-                    return new DataValue(new JsonValue(str, lineCounter));
+                    return new DataValue(new JsonValue(str));
                 }
                 else if (int.TryParse(target, out _))
-                    return new DataValue(new JsonValue(Convert.ToInt32(target), lineCounter));
+                    return new DataValue(new JsonValue(Convert.ToInt32(target)));
                 else if (double.TryParse(target, out _))
-                    return new DataValue(new JsonValue(Convert.ToDouble(target), lineCounter));
+                    return new DataValue(new JsonValue(Convert.ToDouble(target)));
                 else if (target == "true")
-                    return new DataValue(new JsonValue(true, lineCounter));
+                    return new DataValue(new JsonValue(true));
                 else if (target == "false")
-                    return new DataValue(new JsonValue(false, lineCounter));
+                    return new DataValue(new JsonValue(false));
                 else if (target == "null")
-                    return new DataValue(new JsonValue(DataType.Null, lineCounter));
+                    return new DataValue(new JsonValue(DataType.Null));
                 else if (!String.IsNullOrWhiteSpace(target))
-                    throw new DataParserException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
                 listCounter++;
             }
-            throw new DataParserException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
 
         public string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -88,7 +90,7 @@ namespace JsonProcessing.Values
                 sb.Append(target);
                 listCounter++;
             }
-            throw new DataParserException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
     }
 }

@@ -39,11 +39,11 @@ namespace JsonProcessing.Objects
                 }
                 else if (!String.IsNullOrWhiteSpace(target))
                 {
-                    throw new DataParserException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
                 }
                 listCounter++;
             }
-            throw new DataParserException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
 
         private DataValue ParseDataValue(DataNode node, ref string[] stringList, ref int lineCounter, ref int listCounter)
@@ -59,15 +59,15 @@ namespace JsonProcessing.Objects
                 else if (subtarget == ":")
                 {
                     listCounter++;
-                    return valueParser.ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter);
+                    return valueParser.ParseDataValue(node, ref stringList, ref lineCounter, ref listCounter, "}");
                 }
                 else if (!String.IsNullOrWhiteSpace(subtarget))
                 {
-                    throw new DataParserException(lineCounter);
+                    throw new DataParserLineException(lineCounter);
                 }
                 listCounter++;
             }
-            throw new DataParserException(lineCounter);
+            throw new DataParserLineException(lineCounter);
         }
     }
 }
