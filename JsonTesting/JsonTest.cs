@@ -16,6 +16,7 @@ namespace JsonTesting
     {
         private string jsonString;
         private string brokenString;
+        private string pathString;
 
         [TestInitialize]
         public void JsonTestInit()
@@ -75,6 +76,8 @@ namespace JsonTesting
             broken.Append("\t}\n");//24
             broken.Append("}");//25
             brokenString = broken.ToString();
+
+            pathString = "test.json";
         }
 
         [TestMethod]
@@ -141,6 +144,18 @@ namespace JsonTesting
             Assert.AreEqual(query.Type, DataType.Array, "Queried objectis not a JsonArray");
             DataNode queryArr = (DataNode)query.GetValue();
             Console.WriteLine(queryArr.ToString());
+        }
+
+        [TestMethod]
+        [DeploymentItem("test.json")]
+        public void ParseFile()
+        {
+            DataFileParser parser = new(new JsonFileParser());
+            Assert.IsNotNull(parser, "Parser is null");
+            DataNode root = parser.ParseDataFile(pathString);
+            Assert.IsNotNull(root, "Root node is null");
+            string json = root.ToString();
+            Console.WriteLine(json);
         }
     }
 }

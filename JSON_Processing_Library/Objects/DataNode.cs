@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace JsonProcessing.Objects
 {
-    //This maybe should have been split between array and object
     public class DataNode
     {
         public IDataNode Node { get; set; }
