@@ -9,11 +9,11 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_New" />
+                <MenuItem Header="_New" Click="MenuNew"/>
                 <MenuItem Header="_Open" Click="MenuOpen"/>
-                <MenuItem Header="_Save" />
+                <MenuItem Header="_Save" Click="MenuSave"/>
                 <Separator />
-                <MenuItem Header="_Exit" />
+                <MenuItem Header="_Exit" Click="Exit"/>
             </MenuItem>
         </Menu>
         <TextBox AcceptsReturn="True" Name="testText"/>

@@ -24,20 +24,67 @@ namespace JsonUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly string _filter;
         public MainWindow()
         {
             InitializeComponent();
+            _filter = "JSON files (*.json)|*.json";
         }
 
         private void MenuOpen(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            OpenFileDialog openFileDialog = new();
+            openFileDialog.Filter = _filter;
             if (openFileDialog.ShowDialog() == true)
             {
                 DataFileParser fileParser = new(new JsonFileParser());
                 DataNode node = fileParser.ParseDataFile(openFileDialog.FileName);
                 testText.Text = node.ToString();
             }
+        }
+
+        private void MenuSave(object sender, RoutedEventArgs e)
+        {
+            SaveJson();
+        }
+
+        private bool SaveJson()
+        {
+            SaveFileDialog saveFileDialog = new();
+            saveFileDialog.Filter = _filter;
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, testText.Text);
+                return true;
+            }
+            return false;
+        }
+
+        private void MenuNew(object sender, RoutedEventArgs e)
+        {
+            if (testText.Text.Length == 0)
+                return;
+            MessageBoxResult result = MessageBox.Show("Do you want to save changes?", "New File", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                bool save = SaveJson();
+                if (save)
+                    NewJson();
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                NewJson();
+            }
+        }
+
+        private void NewJson()
+        {
+            testText.Text = "";
+        }
+
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
