@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JsonUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="JSON Processing" Height="450" Width="800">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
@@ -16,6 +16,17 @@
                 <MenuItem Header="_Exit" Click="Exit"/>
             </MenuItem>
         </Menu>
-        <TextBox AcceptsReturn="True" Name="testText"/>
+        <DockPanel DockPanel.Dock="Top">
+            <TextBox Height="27"  Width="200" DockPanel.Dock="Left" HorizontalAlignment="Stretch" Name="SearchBar" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+            <DockPanel DockPanel.Dock="Right" HorizontalAlignment="Left">
+                <Button Click="SearchJson" Margin="5,0,5,0">
+                    Search
+                </Button>
+                <Button Click="ClearJson">
+                    Clear
+                </Button>
+            </DockPanel>
+        </DockPanel>
+        <TextBox AcceptsReturn="True" Name="testText" VerticalScrollBarVisibility="Visible"/>
     </DockPanel>
 </Window>

@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using JsonProcessing.Files;
 using JsonProcessing.Objects;
+using JsonProcessing.Values;
 using System.IO;
 
 namespace JsonUI
@@ -25,10 +26,12 @@ namespace JsonUI
     public partial class MainWindow : Window
     {
         private readonly string _filter;
+        private DataNode _node;
         public MainWindow()
         {
             InitializeComponent();
             _filter = "JSON files (*.json)|*.json";
+            _node = new DataNode(new JsonObject());
         }
 
         private void MenuOpen(object sender, RoutedEventArgs e)
@@ -38,8 +41,15 @@ namespace JsonUI
             if (openFileDialog.ShowDialog() == true)
             {
                 DataFileParser fileParser = new(new JsonFileParser());
-                DataNode node = fileParser.ParseDataFile(openFileDialog.FileName);
-                testText.Text = node.ToString();
+                try
+                {
+                    _node = fileParser.ParseDataFile(openFileDialog.FileName);
+                    testText.Text = _node.ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Open File", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -62,29 +72,48 @@ namespace JsonUI
 
         private void MenuNew(object sender, RoutedEventArgs e)
         {
-            if (testText.Text.Length == 0)
-                return;
-            MessageBoxResult result = MessageBox.Show("Do you want to save changes?", "New File", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+            if (testText.Text.Length == 0 || SaveCheck("New File"))
+                testText.Text = "";
+        }
+
+        private bool SaveCheck(string name)
+        {
+            MessageBoxResult result = MessageBox.Show("Do you want to save changes?", name, MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
                 bool save = SaveJson();
                 if (save)
-                    NewJson();
+                    return true;
             }
             else if (result == MessageBoxResult.No)
             {
-                NewJson();
+                return true;
             }
-        }
-
-        private void NewJson()
-        {
-            testText.Text = "";
+            return false;
         }
 
         private void Exit(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            if (testText.Text.Length == 0 || SaveCheck("Exit"))
+                Application.Current.Shutdown();
+        }
+
+        private void SearchJson(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataValue query = _node.Query(SearchBar.Text);
+                testText.Text = query.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Search JSON", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void ClearJson(object sender, RoutedEventArgs e)
+        {
+            testText.Text = _node.ToString();
+            SearchBar.Text = "";
         }
     }
 }
