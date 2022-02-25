@@ -16,6 +16,7 @@ using Microsoft.Win32;
 using JsonProcessing.Files;
 using JsonProcessing.Objects;
 using JsonProcessing.Values;
+using JsonProcessing.Util;
 using System.IO;
 
 namespace JsonUI
@@ -27,11 +28,15 @@ namespace JsonUI
     {
         private readonly string _filter;
         private DataNode _node;
+        private Stack<DataValue> _values;
+        private DataValue _previous;
         public MainWindow()
         {
             InitializeComponent();
             _filter = "JSON files (*.json)|*.json";
             _node = new DataNode(new JsonObject());
+            _values = new Stack<DataValue>();
+            _previous = new DataValue(new JsonValue());
         }
 
         private void MenuOpen(object sender, RoutedEventArgs e)
@@ -104,6 +109,9 @@ namespace JsonUI
             {
                 DataValue query = _node.Query(SearchBar.Text);
                 testText.Text = query.ToString();
+                if (_previous.Type != DataType.Empty)
+                    _values.Push(_previous);
+                _previous = query;
             }
             catch (Exception ex)
             {
@@ -114,6 +122,14 @@ namespace JsonUI
         {
             testText.Text = _node.ToString();
             SearchBar.Text = "";
+        }
+
+        private void BackJson(object sender, RoutedEventArgs e)
+        {
+            if (_values.Count > 0)
+                testText.Text = _values.Pop().ToString();
+            else
+                testText.Text = _node.ToString();
         }
     }
 }

@@ -22,8 +22,11 @@
                 <Button Click="SearchJson" Margin="5,0,5,0">
                     Search
                 </Button>
-                <Button Click="ClearJson">
+                <Button Click="ClearJson" Margin="0,0,5,0">
                     Clear
+                </Button>
+                <Button Click="BackJson">
+                    Back
                 </Button>
             </DockPanel>
         </DockPanel>
