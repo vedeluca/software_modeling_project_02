@@ -12,6 +12,7 @@ namespace JsonProcessing.Objects
     {
         private readonly List<DataValue> values;
         private DataType type;
+        public int Count { get { return values.Count; } }
         public JsonArray()
         {
             values = new List<DataValue>();
@@ -71,16 +72,20 @@ namespace JsonProcessing.Objects
             return new DataValue(new JsonValue());
         }
 
-        public DataValue Get(string key)
+        public DataValue GetValueAt(string key)
         {
             if (int.TryParse(key, out _))
                 return values[Convert.ToInt32(key)];
             else
                 throw new ArgumentException(String.Format("Parameter {0} needs to be an integer for JsonArray.Get()", key));
         }
-        public DataValue Get(int index)
+        public DataValue GetValueAt(int index)
         {
             return values[index];
+        }
+        public string GetKeyAt(int index)
+        {
+            return index.ToString();
         }
     }
 }

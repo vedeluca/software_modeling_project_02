@@ -16,6 +16,7 @@ namespace JsonTesting
     {
         private string jsonString;
         private string brokenString;
+        private string pathString;
 
         [TestInitialize]
         public void JsonTestInit()
@@ -75,6 +76,8 @@ namespace JsonTesting
             broken.Append("\t}\n");//24
             broken.Append("}");//25
             brokenString = broken.ToString();
+
+            pathString = "test.json";
         }
 
         [TestMethod]
@@ -118,13 +121,13 @@ namespace JsonTesting
             node.Add("Number Test", new DataValue(new JsonValue(-123.45)));
             node.Add("String Test", new DataValue(new JsonValue("test \\\"test\\\"")));
             root.Add("node", new DataValue(new JsonValue(node)));
-            DataValue val = root.Get("node");
+            DataValue val = root.GetValueAt("node");
             Assert.IsNotNull(val, "Value in root is null");
             Assert.IsInstanceOfType(val.GetValue(), typeof(DataNode), "Value in root is not JsonObject type");
             DataNode valNode = (DataNode)val.GetValue();
-            Assert.AreEqual(valNode.Get("Boolean Test"), node.Get("Boolean Test"), "Objects do not have matching values");
-            Assert.AreEqual(valNode.Get("Number Test"), node.Get("Number Test"), "Objects do not have matching values");
-            Assert.AreEqual(valNode.Get("String Test"), node.Get("String Test"), "Objects do not have matching values");
+            Assert.AreEqual(valNode.GetValueAt("Boolean Test"), node.GetValueAt("Boolean Test"), "Objects do not have matching values");
+            Assert.AreEqual(valNode.GetValueAt("Number Test"), node.GetValueAt("Number Test"), "Objects do not have matching values");
+            Assert.AreEqual(valNode.GetValueAt("String Test"), node.GetValueAt("String Test"), "Objects do not have matching values");
             Console.WriteLine(root.ToString());
         }
 
@@ -141,6 +144,18 @@ namespace JsonTesting
             Assert.AreEqual(query.Type, DataType.Array, "Queried objectis not a JsonArray");
             DataNode queryArr = (DataNode)query.GetValue();
             Console.WriteLine(queryArr.ToString());
+        }
+
+        [TestMethod]
+        [DeploymentItem("test.json")]
+        public void ParseFile()
+        {
+            DataFileParser parser = new(new JsonFileParser());
+            Assert.IsNotNull(parser, "Parser is null");
+            DataNode root = parser.ParseDataFile(pathString);
+            Assert.IsNotNull(root, "Root node is null");
+            string json = root.ToString();
+            Console.WriteLine(json);
         }
     }
 }

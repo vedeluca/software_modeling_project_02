@@ -9,10 +9,12 @@ namespace JsonProcessing.Objects
 {
     public interface IDataNode
     {
+        int Count { get; }
         void Add(string key, DataValue value);
         string ToString(string tabs);
         DataValue Query(string search);
-        DataValue Get(string key);
-        DataValue Get(int index);
+        DataValue GetValueAt(string key);
+        DataValue GetValueAt(int index);
+        string GetKeyAt(int index);
     }
 }

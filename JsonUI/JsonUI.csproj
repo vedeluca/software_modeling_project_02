@@ -7,4 +7,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\JSON_Processing_Library\JsonProcessing.csproj" />
+  </ItemGroup>
+
 </Project>
