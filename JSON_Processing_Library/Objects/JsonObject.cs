@@ -11,6 +11,7 @@ namespace JsonProcessing.Objects
     public class JsonObject : IDataNode
     {
         private readonly Dictionary<string, DataValue> items;
+        public int Count { get { return items.Count; } }
         public JsonObject()
         {
             items = new Dictionary<string, DataValue>();
@@ -59,14 +60,19 @@ namespace JsonProcessing.Objects
             return new DataValue(new JsonValue());
         }
 
-        public DataValue Get(string key)
+        public DataValue GetValueAt(string key)
         {
             return items[key];
         }
 
-        public DataValue Get(int index)
+        public DataValue GetValueAt(int index)
         {
             return items.ElementAt(index).Value;
+        }
+
+        public string GetKeyAt(int index)
+        {
+            return items.ElementAt(index).Key;
         }
     }
 }

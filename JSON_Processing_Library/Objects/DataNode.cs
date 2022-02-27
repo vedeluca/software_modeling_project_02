@@ -13,6 +13,13 @@ namespace JsonProcessing.Objects
         public IDataNode Node { get; set; }
         public DataNode? Parent { get; set; }
         public DataNode? Root { get; set; }
+        public int Count
+        {
+            get
+            {
+                return Node.Count;
+            }
+        }
 
         public DataNode(IDataNode node) : base()
         {
@@ -45,13 +52,17 @@ namespace JsonProcessing.Objects
         {
             return Node.Query(search);
         }
-        public DataValue Get(string key)
+        public DataValue GetValueAt(string key)
         {
-            return Node.Get(key);
+            return Node.GetValueAt(key);
         }
-        public DataValue Get(int index)
+        public DataValue GetValueAt(int index)
         {
-            return Node.Get(index);
+            return Node.GetValueAt(index);
+        }
+        public string GetKeyAt(int index)
+        {
+            return Node.GetKeyAt(index);
         }
     }
 }

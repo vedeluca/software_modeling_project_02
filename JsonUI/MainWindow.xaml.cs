@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 using JsonProcessing.Files;
 using JsonProcessing.Objects;
@@ -28,15 +18,16 @@ namespace JsonUI
     {
         private readonly string _filter;
         private DataNode _node;
-        private Stack<DataValue> _values;
-        private DataValue _previous;
+        private Stack<QueriedValue> _values;
+        private QueriedValue _previous;
+
         public MainWindow()
         {
             InitializeComponent();
             _filter = "JSON files (*.json)|*.json";
             _node = new DataNode(new JsonObject());
-            _values = new Stack<DataValue>();
-            _previous = new DataValue(new JsonValue());
+            _values = new Stack<QueriedValue>();
+            _previous = new QueriedValue();
         }
 
         private void MenuOpen(object sender, RoutedEventArgs e)
@@ -49,7 +40,7 @@ namespace JsonUI
                 try
                 {
                     _node = fileParser.ParseDataFile(openFileDialog.FileName);
-                    testText.Text = _node.ToString();
+                    StartTree(_node);
                 }
                 catch (Exception ex)
                 {
@@ -69,16 +60,10 @@ namespace JsonUI
             saveFileDialog.Filter = _filter;
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, testText.Text);
+                File.WriteAllText(saveFileDialog.FileName, _node.ToString());
                 return true;
             }
             return false;
-        }
-
-        private void MenuNew(object sender, RoutedEventArgs e)
-        {
-            if (testText.Text.Length == 0 || SaveCheck("New File"))
-                testText.Text = "";
         }
 
         private bool SaveCheck(string name)
@@ -99,7 +84,7 @@ namespace JsonUI
 
         private void Exit(object sender, RoutedEventArgs e)
         {
-            if (testText.Text.Length == 0 || SaveCheck("Exit"))
+            if (SaveCheck("Exit"))
                 Application.Current.Shutdown();
         }
 
@@ -107,9 +92,11 @@ namespace JsonUI
         {
             try
             {
-                DataValue query = _node.Query(SearchBar.Text);
-                testText.Text = query.ToString();
-                if (_previous.Type != DataType.Empty)
+                string key = SearchBar.Text;
+                DataValue value = _node.Query(key);
+                QueriedValue query = new QueriedValue(key, value);
+                StartTree(query);
+                if (_previous.Value.Type != DataType.Empty)
                     _values.Push(_previous);
                 _previous = query;
             }
@@ -118,18 +105,67 @@ namespace JsonUI
                 MessageBox.Show(ex.Message, "Search JSON", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void ClearJson(object sender, RoutedEventArgs e)
-        {
-            testText.Text = _node.ToString();
-            SearchBar.Text = "";
-        }
 
         private void BackJson(object sender, RoutedEventArgs e)
         {
             if (_values.Count > 0)
-                testText.Text = _values.Pop().ToString();
+                StartTree(_values.Pop());
             else
-                testText.Text = _node.ToString();
+                StartTree(_node);
+        }
+
+        private void StartTree(DataNode node)
+        {
+            JsonTree.Items.Clear();
+            TreeViewItem root = new();
+            JsonTree.Items.Add(FillTree(node, root));
+        }
+
+        private void StartTree(QueriedValue query)
+        {
+            JsonTree.Items.Clear();
+            TreeViewItem root = new();
+            root.Header = query.Key;
+            JsonTree.Items.Add(AddToTree(query.Value, root));
+        }
+
+        private TreeViewItem AddToTree(DataValue value, TreeViewItem trunk)
+        {
+            if (value.Type == DataType.Empty)
+                return trunk;
+            if (value.Type == DataType.Object || value.Type == DataType.Array)
+            {
+                DataNode node = (DataNode)value.GetValue();
+                return FillTree(node, trunk);
+            }
+            TreeViewItem branch = new();
+            branch.Header = value.ToString();
+            trunk.Items.Add(branch);
+            return trunk;
+        }
+
+        private TreeViewItem FillTree(DataNode node, TreeViewItem trunk)
+        {
+            for (int i = 0; i < node.Count; i++)
+            {
+                DataValue dataValue = node.GetValueAt(i);
+                TreeViewItem branch = AddToTree(dataValue, new TreeViewItem());
+                branch.Header = node.GetKeyAt(i);
+                trunk.Items.Add(branch);
+            }
+            return trunk;
+        }
+
+        private class QueriedValue
+        {
+            public string Key { get; set; }
+            public DataValue Value { get; set; }
+            public QueriedValue()
+            {
+                Key = "";
+                Value = new DataValue(new JsonValue());
+            }
+            public QueriedValue(string key, DataValue value) { Key = key; Value = value; }
         }
     }
 }
