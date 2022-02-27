@@ -17,17 +17,17 @@ namespace JsonUI
     public partial class MainWindow : Window
     {
         private readonly string _filter;
-        private DataNode _node;
+        private DataNode _root;
         private Stack<QueriedValue> _values;
-        private QueriedValue _previous;
+        private QueriedValue _current;
 
         public MainWindow()
         {
             InitializeComponent();
             _filter = "JSON files (*.json)|*.json";
-            _node = new DataNode(new JsonObject());
+            _root = new DataNode(new JsonObject());
             _values = new Stack<QueriedValue>();
-            _previous = new QueriedValue();
+            _current = new QueriedValue();
         }
 
         private void MenuOpen(object sender, RoutedEventArgs e)
@@ -39,8 +39,8 @@ namespace JsonUI
                 DataFileParser fileParser = new(new JsonFileParser());
                 try
                 {
-                    _node = fileParser.ParseDataFile(openFileDialog.FileName);
-                    StartTree(_node);
+                    _root = fileParser.ParseDataFile(openFileDialog.FileName);
+                    StartTree(_root);
                 }
                 catch (Exception ex)
                 {
@@ -60,7 +60,7 @@ namespace JsonUI
             saveFileDialog.Filter = _filter;
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, _node.ToString());
+                File.WriteAllText(saveFileDialog.FileName, _root.ToString());
                 return true;
             }
             return false;
@@ -93,12 +93,12 @@ namespace JsonUI
             try
             {
                 string key = SearchBar.Text;
-                DataValue value = _node.Query(key);
+                DataValue value = _root.Query(key);
                 QueriedValue query = new QueriedValue(key, value);
                 StartTree(query);
-                if (_previous.Value.Type != DataType.Empty)
-                    _values.Push(_previous);
-                _previous = query;
+                if (_current.Value.Type != DataType.Empty)
+                    _values.Push(_current);
+                _current = query;
             }
             catch (Exception ex)
             {
@@ -111,7 +111,29 @@ namespace JsonUI
             if (_values.Count > 0)
                 StartTree(_values.Pop());
             else
-                StartTree(_node);
+                StartTree(_root);
+        }
+
+        private void AddJson(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string json = JsonText.Text;
+                DataStringParser parser = new(new JsonStringParser());
+                DataNode child = parser.ParseDataString(json);
+                DataValue value = _current.Value;
+                if (value.Type != DataType.Object && value.Type != DataType.Array)
+                    throw new Exception("This JSON string can not be added to the current subtree. Only add to objects or arrays.");
+                DataNode parent = (DataNode)value.GetValue();
+                child.Parent = parent;
+                child.Root = (parent.Root == null) ? parent : parent.Root;
+                parent.Add("test", new DataValue(new JsonValue(child)));
+                StartTree(_current);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Add JSON", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void StartTree(DataNode node)
