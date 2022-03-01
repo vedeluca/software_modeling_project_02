@@ -10,11 +10,21 @@ namespace JsonProcessing.Values
     public class DataValue
     {
         private IDataValue dataValue;
-        public DataType Type { get; }
+        public DataType Type
+        {
+            get
+            {
+                return dataValue.Type;
+            }
+        }
+
+        public DataValue()
+        {
+            dataValue = new JsonValue();
+        }
         public DataValue(IDataValue value)
         {
             dataValue = value;
-            Type = value.Type;
         }
         public object GetValue()
         {

@@ -10,6 +10,10 @@ namespace JsonProcessing.Values
     public class DataValueParser
     {
         private IDataValueParser dataValueParser;
+        public DataValueParser()
+        {
+            dataValueParser = new JsonValueParser();
+        }
         public DataValueParser(IDataValueParser parser)
         {
             dataValueParser = parser;
@@ -20,8 +24,8 @@ namespace JsonProcessing.Values
         }
 
         public string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)
-        { 
-            return dataValueParser.ParseString(ref stringList, ref lineCounter,ref listCounter);
+        {
+            return dataValueParser.ParseString(ref stringList, ref lineCounter, ref listCounter);
         }
     }
 }

@@ -85,7 +85,7 @@ namespace JsonProcessing.Objects
         }
 
         /// <summary>
-        /// Keeps track of indentation when converting nested JsonNodes to string
+        /// Keeps track of indentation when converting nested DataNodes to string
         /// </summary>
         /// <param name="tabs"></param>
         /// <returns>The entire node in string format, with proper indentation</returns>

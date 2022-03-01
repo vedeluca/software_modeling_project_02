@@ -36,7 +36,7 @@ namespace JsonUI
             openFileDialog.Filter = _filter;
             if (openFileDialog.ShowDialog() == true)
             {
-                DataFileParser fileParser = new(new JsonFileParser());
+                DataFileParser fileParser = new();
                 try
                 {
                     _root = fileParser.ParseDataFile(openFileDialog.FileName);
@@ -185,7 +185,7 @@ namespace JsonUI
             public QueriedValue()
             {
                 Key = "";
-                Value = new DataValue(new JsonValue());
+                Value = new DataValue();
             }
             public QueriedValue(string key, DataValue value) { Key = key; Value = value; }
         }

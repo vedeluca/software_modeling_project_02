@@ -10,6 +10,10 @@ namespace JsonProcessing.Files
     public class DataStringParser
     {
         IDataStringParser dataStringParser;
+        public DataStringParser()
+        {
+            dataStringParser = new JsonStringParser();
+        }
         public DataStringParser(IDataStringParser parser)
         {
             dataStringParser = parser;
