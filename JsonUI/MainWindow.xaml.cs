@@ -119,7 +119,7 @@ namespace JsonUI
             try
             {
                 string json = JsonText.Text;
-                DataStringParser parser = new(new JsonStringParser());
+                DataStringParser parser = new();
                 DataNode child = parser.ParseDataString(json);
                 DataValue value = _current.Value;
                 if (value.Type != DataType.Object && value.Type != DataType.Array)

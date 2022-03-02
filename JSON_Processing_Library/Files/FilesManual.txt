@@ -1,0 +1,13 @@
+﻿This folder contains the parsers used for either a data string or a data file. Both return the root
+DataNode.
+
+DataFileParser - parses data file and passes string to the DataStringParser
+DataStringParser - parses the data string and returns the root DataNode
+IDataFileParser - interface for JsonFileParser
+IDataStringParser - interface for JsonStringParser
+JsonFileParser - parses JSON file and passes JSON string to JsonStringParser
+JsonStringParser - parses the JSON string and returns the root JsonObject or JsonArray
+
+v1.22.1.6 - vincent_deluca_project_01 started
+v1.22.2.19 - cloned from vincent_deluca_project_01
+v1.22.3.1 - manual written
