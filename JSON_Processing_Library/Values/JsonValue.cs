@@ -10,12 +10,19 @@ namespace JsonProcessing.Values
 {
     public class JsonValue : IDataValue
     {
+        /// <summary>
+        /// These values are all possible values for an instance of this class
+        /// </summary>
         private string stringValue;
         private int integerValue;
         private double doubleValue;
         private bool booleanValue;
         private DataNode objectValue;
         private DataNode arrayValue;
+
+        /// <summary>
+        /// This DataType determines while value is being used
+        /// </summary>
         private DataType type;
         DataType IDataValue.Type
         {
@@ -29,6 +36,9 @@ namespace JsonProcessing.Values
             }
         }
 
+        /// <summary>
+        /// All values initiated as empty and the type is set to Empty
+        /// </summary>
         public JsonValue()
         {
             stringValue = "";
@@ -40,6 +50,11 @@ namespace JsonProcessing.Values
             type = DataType.Empty;
         }
 
+        /// <summary>
+        /// Determines which value is used and what the type is
+        /// </summary>
+        /// <param name="value"></param>
+        /// <exception cref="DataParserTypeException"></exception>
         public JsonValue(object value)
              : this()
         {
@@ -86,6 +101,10 @@ namespace JsonProcessing.Values
             }
         }
 
+        /// <summary>
+        /// Get the actual value
+        /// </summary>
+        /// <returns>If the value is null or empty, the type is checked</returns>
         public object GetValue()
         {
             if (type == DataType.String)
@@ -104,6 +123,11 @@ namespace JsonProcessing.Values
                 return this;
         }
 
+        /// <summary>
+        /// Keeps track of indentation when converting nested JsonValues to string
+        /// </summary>
+        /// <param name="tabs"></param>
+        /// <returns>The entire JsonValue in string format, with proper indentation</returns>
         public string ToString(string tabs)
         {
             if (type == DataType.String)
@@ -122,6 +146,10 @@ namespace JsonProcessing.Values
                 return "null";
         }
 
+        /// <summary>
+        /// Puts quotation marks back onto the string
+        /// </summary>
+        /// <returns>The stringValue with quotation marks</returns>
         private string StringToJsonString()
         {
             StringBuilder sb = new();
@@ -131,6 +159,11 @@ namespace JsonProcessing.Values
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Adds tabs when further indenting
+        /// </summary>
+        /// <param name="tabs"></param>
+        /// <returns>Several \t characters</returns>
         private static string MoreTabs(string tabs)
         {
             StringBuilder sb = new();
