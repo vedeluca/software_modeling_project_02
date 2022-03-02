@@ -1,0 +1,16 @@
+﻿This folder contains the nodes classes and their parsers. The Objects parsers talk to the parsers in the 
+Files folder to generate nodes. The Objects parsers also use the parsers in the Values folder to populate
+the nodes with values.
+
+DataNode - generic node class that can be a JsonObject or JsonArray
+DataNodeParser - parses string list to return DataNode
+IDataNode - interface for JsonObject and JsonArray
+IDataNodeParser - interface for JsonObjectParser and JsonArrayParser
+JsonArray - holds a list of DataValues
+JsonArrayParser - parses string list to configure JsonArray
+JsonObject - holds a dictionary of DataValues
+JsonObjectParser - parses string list to configure JsonObject
+
+v1.22.1.6 - vincent_deluca_project_01 started
+v1.22.2.19 - cloned from vincent_deluca_project_01
+v1.22.2.28 - manual written

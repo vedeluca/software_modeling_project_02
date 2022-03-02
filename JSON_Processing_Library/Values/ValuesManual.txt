@@ -1,0 +1,13 @@
+﻿This folder contains the value classes and their parsers. The Values parsers are the final step in parsing
+a data string. These parsers pass values to the Objects parsers.
+
+DataValue - value class used for JsonValue injection
+DataValueParser - parses string list to return DataValue
+IDataValue - interface for JsonValue
+IDataValueParser - interface for JsonValueParser
+JsonValue - contains a string, double, int, boolean, object, array, null, or is empty
+JsonValueParser - parses string list to configure JsonValue
+
+v1.22.1.6 - vincent_deluca_project_01 started
+v1.22.2.19 - cloned from vincent_deluca_project_01
+v1.22.3.1 - manual written

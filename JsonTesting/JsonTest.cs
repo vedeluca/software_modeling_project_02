@@ -150,7 +150,7 @@ namespace JsonTesting
         [DeploymentItem("test.json")]
         public void ParseFile()
         {
-            DataFileParser parser = new(new JsonFileParser());
+            DataFileParser parser = new();
             Assert.IsNotNull(parser, "Parser is null");
             DataNode root = parser.ParseDataFile(pathString);
             Assert.IsNotNull(root, "Root node is null");

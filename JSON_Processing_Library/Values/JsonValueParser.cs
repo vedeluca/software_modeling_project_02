@@ -10,6 +10,16 @@ namespace JsonProcessing.Values
 {
     public class JsonValueParser : IDataValueParser
     {
+        /// <summary>
+        /// Parse the value in the current DataNode
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="stringList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <param name="end"></param>
+        /// <returns>The parsed DataValue</returns>
+        /// <exception cref="DataParserLineException"></exception>
         public DataValue ParseDataValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter, string end)
         {
             List<string> ends = new();
@@ -30,6 +40,15 @@ namespace JsonProcessing.Values
             throw new DataParserLineException(lineCounter);
         }
 
+        /// <summary>
+        /// Determines what type of value is being parsed
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="stringList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>The parsed DataValue</returns>
+        /// <exception cref="DataParserLineException"></exception>
         private DataValue ParseValue(DataNode parent, ref string[] stringList, ref int lineCounter, ref int listCounter)
         {
             while (listCounter < stringList.Length)
@@ -73,6 +92,13 @@ namespace JsonProcessing.Values
             throw new DataParserLineException(lineCounter);
         }
 
+        /// <summary>
+        /// Parses a string withing the JSON string
+        /// </summary>
+        /// <param name="stringList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>A properly formatted string</returns>
         public string ParseString(ref string[] stringList, ref int lineCounter, ref int listCounter)
         {
             StringBuilder sb = new StringBuilder();

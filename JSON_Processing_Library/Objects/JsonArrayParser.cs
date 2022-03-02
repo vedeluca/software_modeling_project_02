@@ -10,12 +10,28 @@ namespace JsonProcessing.Objects
 {
     public class JsonArrayParser : IDataNodeParser
     {
+        /// <summary>
+        /// The parser for generating DataValues from JSON strings
+        /// </summary>
         private readonly DataValueParser valueParser;
 
+        /// <summary>
+        /// Initializes DataValueParser
+        /// </summary>
         public JsonArrayParser()
         {
-            valueParser = new DataValueParser(new JsonValueParser());
+            valueParser = new DataValueParser();
         }
+
+        /// <summary>
+        /// Parse the current DataNode while looking for the end of the array
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="stringList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>A new DataNode</returns>
+        /// <exception cref="DataParserLineException"></exception>
         public DataNode ParseDataNode(DataNode node, ref string[] stringList, ref int lineCounter, ref int listCounter)
         {
             listCounter++;

@@ -10,12 +10,28 @@ namespace JsonProcessing.Objects
 {
     public class JsonObjectParser : IDataNodeParser
     {
+        /// <summary>
+        /// The parser for generating DataValues from JSON strings
+        /// </summary>
         private readonly DataValueParser valueParser;
 
+        /// <summary>
+        /// Initializes DataValueParser
+        /// </summary>
         public JsonObjectParser()
         {
-            valueParser = new DataValueParser(new JsonValueParser());
+            valueParser = new DataValueParser();
         }
+
+        /// <summary>
+        /// Parse the current DataNode while looking for the end of the object
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="stringList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>A new DataNode</returns>
+        /// <exception cref="DataParserLineException"></exception>
         public DataNode ParseDataNode(DataNode node, ref string[] stringList, ref int lineCounter, ref int listCounter)
         {
             listCounter++;
@@ -46,6 +62,15 @@ namespace JsonProcessing.Objects
             throw new DataParserLineException(lineCounter);
         }
 
+        /// <summary>
+        /// Check for colon before parsing the DataValue
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="stringList"></param>
+        /// <param name="lineCounter"></param>
+        /// <param name="listCounter"></param>
+        /// <returns>A new DataValue</returns>
+        /// <exception cref="DataParserLineException"></exception>
         private DataValue ParseDataValue(DataNode node, ref string[] stringList, ref int lineCounter, ref int listCounter)
         {
             listCounter++;

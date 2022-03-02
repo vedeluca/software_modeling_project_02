@@ -9,10 +9,15 @@ namespace JsonProcessing.Files
 {
     public class JsonFileParser : IDataFileParser
     {
+        /// <summary>
+        /// Parse the JSON file at path and 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>The root DataNode</returns>
         public DataNode ParseDataFile(string path)
         {
             string text = File.ReadAllText(path);
-            return new DataStringParser(new JsonStringParser()).ParseDataString(text);
+            return new DataStringParser().ParseDataString(text);
         }
     }
 }

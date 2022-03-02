@@ -16,11 +16,29 @@ namespace JsonUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Filter used for saving and opening files
+        /// </summary>
         private readonly string _filter;
+
+        /// <summary>
+        /// The root node of the opened JSON file
+        /// </summary>
         private DataNode _root;
+
+        /// <summary>
+        /// A stack of searched values for going back to previous searches
+        /// </summary>
         private Stack<QueriedValue> _values;
+
+        /// <summary>
+        /// The currently shown value
+        /// </summary>
         private QueriedValue _current;
 
+        /// <summary>
+        /// Initialize component and private variables
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -30,13 +48,18 @@ namespace JsonUI
             _current = new QueriedValue();
         }
 
+        /// <summary>
+        /// Open a JSON file and populate the tree
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MenuOpen(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new();
             openFileDialog.Filter = _filter;
             if (openFileDialog.ShowDialog() == true)
             {
-                DataFileParser fileParser = new(new JsonFileParser());
+                DataFileParser fileParser = new();
                 try
                 {
                     _root = fileParser.ParseDataFile(openFileDialog.FileName);
@@ -49,11 +72,20 @@ namespace JsonUI
             }
         }
 
+        /// <summary>
+        /// Save the current JSON tree from the menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MenuSave(object sender, RoutedEventArgs e)
         {
             SaveJson();
         }
 
+        /// <summary>
+        /// Save the current JSON tree
+        /// </summary>
+        /// <returns>If save successful, return true</returns>
         private bool SaveJson()
         {
             SaveFileDialog saveFileDialog = new();
@@ -66,6 +98,11 @@ namespace JsonUI
             return false;
         }
 
+        /// <summary>
+        /// Check if the user wants to save the current file before exiting
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>If the user cancels or the save fails, return false.</returns>
         private bool SaveCheck(string name)
         {
             MessageBoxResult result = MessageBox.Show("Do you want to save changes?", name, MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
@@ -82,12 +119,22 @@ namespace JsonUI
             return false;
         }
 
+        /// <summary>
+        /// Check if the user wants to save, then shut down the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Exit(object sender, RoutedEventArgs e)
         {
             if (SaveCheck("Exit"))
                 Application.Current.Shutdown();
         }
 
+        /// <summary>
+        /// Search the opened JSON file and then update the tree
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchJson(object sender, RoutedEventArgs e)
         {
             try
@@ -106,29 +153,54 @@ namespace JsonUI
             }
         }
 
+        /// <summary>
+        /// Go back to the previous search till you get to the root
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BackJson(object sender, RoutedEventArgs e)
         {
             if (_values.Count > 0)
-                StartTree(_values.Pop());
+            {
+                _current = _values.Pop();
+                StartTree(_current);
+            }
             else
                 StartTree(_root);
+
         }
 
+        /// <summary>
+        /// Add the typed out object or array to the JSON tree at the current location
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddJson(object sender, RoutedEventArgs e)
         {
             try
             {
                 string json = JsonText.Text;
-                DataStringParser parser = new(new JsonStringParser());
+                DataStringParser parser = new();
                 DataNode child = parser.ParseDataString(json);
-                DataValue value = _current.Value;
-                if (value.Type != DataType.Object && value.Type != DataType.Array)
-                    throw new Exception("This JSON string can not be added to the current subtree. Only add to objects or arrays.");
-                DataNode parent = (DataNode)value.GetValue();
+                DataNode parent;
+                if (_values.Count > 0)
+                {
+                    DataValue value = _current.Value;
+                    if (value.Type != DataType.Object && value.Type != DataType.Array)
+                        throw new Exception("This JSON string can not be added to the current subtree. Only add to objects or arrays.");
+                    parent = (DataNode)value.GetValue();
+                }
+                else
+                {
+                    parent = _root;
+                }
                 child.Parent = parent;
-                child.Root = (parent.Root == null) ? parent : parent.Root;
-                parent.Add("test", new DataValue(new JsonValue(child)));
-                StartTree(_current);
+                child.Root = _root;
+                parent.Add(KeyText.Text, new DataValue(new JsonValue(child)));
+                if (_values.Count > 0)
+                    StartTree(_current);
+                else
+                    StartTree(_root);
             }
             catch (Exception ex)
             {
@@ -136,6 +208,10 @@ namespace JsonUI
             }
         }
 
+        /// <summary>
+        /// Start populating the tree with the DataNode
+        /// </summary>
+        /// <param name="node"></param>
         private void StartTree(DataNode node)
         {
             JsonTree.Items.Clear();
@@ -143,6 +219,10 @@ namespace JsonUI
             JsonTree.Items.Add(FillTree(node, root));
         }
 
+        /// <summary>
+        /// Start populating the tree with the searched value
+        /// </summary>
+        /// <param name="query"></param>
         private void StartTree(QueriedValue query)
         {
             JsonTree.Items.Clear();
@@ -151,6 +231,12 @@ namespace JsonUI
             JsonTree.Items.Add(AddToTree(query.Value, root));
         }
 
+        /// <summary>
+        /// Add a branch to the tree
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="trunk"></param>
+        /// <returns>The TreeViewItem passed in</returns>
         private TreeViewItem AddToTree(DataValue value, TreeViewItem trunk)
         {
             if (value.Type == DataType.Empty)
@@ -166,6 +252,12 @@ namespace JsonUI
             return trunk;
         }
 
+        /// <summary>
+        /// Create branches for all the values in the node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="trunk"></param>
+        /// <returns>The TreeViewItem passed in</returns>
         private TreeViewItem FillTree(DataNode node, TreeViewItem trunk)
         {
             for (int i = 0; i < node.Count; i++)
@@ -178,6 +270,9 @@ namespace JsonUI
             return trunk;
         }
 
+        /// <summary>
+        /// The queried value and its search term as the key
+        /// </summary>
         private class QueriedValue
         {
             public string Key { get; set; }
@@ -185,7 +280,7 @@ namespace JsonUI
             public QueriedValue()
             {
                 Key = "";
-                Value = new DataValue(new JsonValue());
+                Value = new DataValue();
             }
             public QueriedValue(string key, DataValue value) { Key = key; Value = value; }
         }
