@@ -161,9 +161,13 @@ namespace JsonUI
         private void BackJson(object sender, RoutedEventArgs e)
         {
             if (_values.Count > 0)
-                StartTree(_values.Pop());
+            {
+                _current = _values.Pop();
+                StartTree(_current);
+            }
             else
                 StartTree(_root);
+
         }
 
         /// <summary>
@@ -178,14 +182,25 @@ namespace JsonUI
                 string json = JsonText.Text;
                 DataStringParser parser = new();
                 DataNode child = parser.ParseDataString(json);
-                DataValue value = _current.Value;
-                if (value.Type != DataType.Object && value.Type != DataType.Array)
-                    throw new Exception("This JSON string can not be added to the current subtree. Only add to objects or arrays.");
-                DataNode parent = (DataNode)value.GetValue();
+                DataNode parent;
+                if (_values.Count > 0)
+                {
+                    DataValue value = _current.Value;
+                    if (value.Type != DataType.Object && value.Type != DataType.Array)
+                        throw new Exception("This JSON string can not be added to the current subtree. Only add to objects or arrays.");
+                    parent = (DataNode)value.GetValue();
+                }
+                else
+                {
+                    parent = _root;
+                }
                 child.Parent = parent;
-                child.Root = (parent.Root == null) ? parent : parent.Root;
-                parent.Add("test", new DataValue(new JsonValue(child)));
-                StartTree(_current);
+                child.Root = _root;
+                parent.Add(KeyText.Text, new DataValue(new JsonValue(child)));
+                if (_values.Count > 0)
+                    StartTree(_current);
+                else
+                    StartTree(_root);
             }
             catch (Exception ex)
             {
